@@ -8,6 +8,10 @@
     Remember to initialise a database first!
 """
 
+from outpan import OutpanApi
+my_api_key='0004d931710b2493c2497fb10e19a146'
+api = OutpanApi(my_api_key)
+
 # Libraries that we need
 import sys
 import sqlite3 as sql
@@ -20,27 +24,27 @@ class IoTFridge:
 
     def __init__(self, dbpath, infile, outfile):
         self.db = sql.connect(dbpath)
-        self.cur = self.db.cursor() 
-        # save the filedesc of in and out
+        self.cur = self.db.cursor()
         self.infile = infile
         self.outfile = outfile
+        self.unique_id = 0
 
     # Begin API requests
 
     def req_list(self, reqj):
         resp = { 'response': [], 'success': True }
-        for row in self.cur.execute("SELECT itemName FROM items"):
+        for row in self.cur.execute("SELECT * FROM item"):
             # Each row only contains one thing right now, name...
-            resp['response'].append({'name': row[0] })
+            resp['response'].append({'data': row })
         print >> self.outfile, json.dumps(resp, indent = 1)
 
     def req_insert(self, reqj):
-        data = (reqj['id'], reqj['data']['name'])
-        self.cur.execute("INSERT INTO items VALUES (?, ?)", data)
+        data = (self.unique_id, reqj['EAN13'] ,reqj['data']['name'], reqj['data']['expdate'])
+        self.unique_id=self.unique_id+1
+        self.cur.execute("INSERT INTO item VALUES ( ?, ?, ?, datetime('now','localtime'), ?)", data)
         self.db.commit()
         resp = {'response': 'OK', 'success': True}
         print >> self.outfile, json.dumps(resp)
-
 
     # End API requests
 
@@ -101,3 +105,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print >> sys.stderr, "Received interrupt, quitting..."
     print >> sys.stderr, "Done"
+
+    # outpan test
+    print api.get_product("0072830005555")

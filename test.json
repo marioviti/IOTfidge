@@ -1,10 +1,10 @@
-{"request": "insert", "id":123, "data": {"name": "Milk"} }
+{"request": "insert", "EAN13":123, "data": {"name": "Milk", "expdate": "2015-03-12" } }
 
-{"request": "insert", "id":1234, "data": {"name": "Butter"} }
+{"request": "insert", "EAN13":1234, "data": {"name": "Butter", "expdate": "2017-03-12" } }
 
 {"request": "list"}
 
-{"request": "insert", "id":12345, "data": {"name": "Cheese"} }
+{"request": "insert", "EAN13":12345, "data": {"name": "Cheese", "expdate": "2016-03-12" } }
 
 {"request": "list"}
 
