@@ -1,10 +1,7 @@
 #labelApi
 
 import requests
-apikey = '4cy7zxu8hbjfnugdgrnpeekc'
-
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
+# apikey = '4cy7zxu8hbjfnugdgrnpeekc'
 
 # 'http://api.foodessentials.com/createsession?
 #	uid=marioviti.LabelApi&
@@ -76,8 +73,8 @@ class request:
 			ret = self.getdata(produpc)
 		return ret
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
 
-	fridgeApi = request('marioviti.LabelApi','iot_fridge','fridge_01',apikey)
-	pp.pprint(fridgeApi.getdata('072830005555'))
+# 	fridgeApi = request('marioviti.LabelApi','iot_fridge','fridge_01',apikey)
+# 	pp.pprint(fridgeApi.getdata('072830005555'))
 

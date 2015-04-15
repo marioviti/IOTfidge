@@ -8,14 +8,24 @@
     Remember to initialise a database first!
 """
 
-from outpan import OutpanApi
-my_api_key='0004d931710b2493c2497fb10e19a146'
-api = OutpanApi(my_api_key)
-
 # Libraries that we need
 import sys
 import sqlite3 as sql
 import json
+
+from outpan import OutpanApi
+my_api_key='0004d931710b2493c2497fb10e19a146'
+api = OutpanApi(my_api_key)
+
+
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
+
+import labelApi
+labelApikey = '4cy7zxu8hbjfnugdgrnpeekc'
+fridgelabelapi = labelApi.request('marioviti.LabelApi','iot_fridge','fridge_01',labelApikey)
+
 
 class IoTFridge:
     """
@@ -107,4 +117,7 @@ if __name__ == '__main__':
     print >> sys.stderr, "Done"
 
     # outpan test
-    print api.get_product("0072830005555")
+    # print api.get_product("0072830005555")
+
+    # output label
+    pp.pprint(fridgelabelapi.getdata('072830005555'))
