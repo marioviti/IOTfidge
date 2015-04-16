@@ -38,9 +38,14 @@ class IoTFridge:
         self.api = labelApi.request(user, app, dev, labelApikey)
 
     def req_list(self, reqj):
-        resp = { 'response': [], 'success': True }
-        for row in self.cur.execute("SELECT * FROM item"):
-            resp['response'].append({'data': row })
+        resp = { 'response': { 'table': reqj['table'] , 'records' : []}, 'success': True }
+        query = "SELECT * FROM "+ reqj['table']
+        i = 0
+        for row in self.cur.execute(query):
+            i = 0
+            for entry in row:
+                resp['response']['records'].append({self.cur.description[i][0]: entry})
+                i = i+1
         print >> self.outfile, json.dumps(resp, indent = 1)
 
     def req_insert(self, reqj):
@@ -65,8 +70,16 @@ class IoTFridge:
         data = (reqj['data']['name'], reqj['data']['last_name'])
         self.cur.execute("INSERT INTO profile VALUES (NULL, ?, ?)", data)
         profile_id = 0
-        for row in self.cur.execute("SELECT * FROM profile"):
-            print row
+        for profile in self.cur.execute("SELECT MAX(ID) FROM profile"):
+            profile_id = profile[0]
+        for allergen in reqj['data']['allergen']:
+            print allergen
+            data = (profile_id, allergen)
+            self.cur.execute("INSERT INTO allergen VALUES (NULL, ?, ?)", data)
+        resp = {'response': 'OK', 'success': True}
+        print >> self.outfile, json.dumps(resp)
+        #for row in self.cur.execute("SELECT * FROM profile"):
+            #print row
 
     # End API requests
 

@@ -2,17 +2,19 @@
 
 { "request": "insert", "GTIN": "NULL", "data": {"name": "Butter", "ingredients": "NULL", "expdate": "2017-03-12" } }
 
-{ "request": "list"}
-
 { "request": "insert", "GTIN": "NULL", "data": {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 
 { "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 
-{ "request": "list"}
-
-{ "request": "profile", "data":  {"name": "Mario", "last_name": "Viti" , "allergen": ["nuts","berry"]} }
+{ "request": "profile", "data":  {"name": "Mario", "last_name": "Viti" , "allergen": ["CULTURED MILK","berry"]} }
 
 { "request": "profile", "data":  {"name": "Giulia", "last_name": "Biasci" , "allergen": ["nuts","berry"]} }
 
+{ "request": "list" , "table" : "item" }
 
-{ "request": "list"}
+{ "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
+
+{ "request": "list", "table" : "profile" }
+
+{ "request": "list", "table" : "allergen" }
+
