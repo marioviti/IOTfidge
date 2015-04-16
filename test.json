@@ -1,10 +1,18 @@
-{"request": "insert", "EAN13":123, "data": {"name": "Milk", "expdate": "2015-03-12" } }
+{ "request": "insert", "GTIN": "NULL", "data": {"name": "Milk", "ingredients": "NULL", "expdate": "2015-03-12" } }
 
-{"request": "insert", "EAN13":1234, "data": {"name": "Butter", "expdate": "2017-03-12" } }
+{ "request": "insert", "GTIN": "NULL", "data": {"name": "Butter", "ingredients": "NULL", "expdate": "2017-03-12" } }
 
-{"request": "list"}
+{ "request": "list"}
 
-{"request": "insert", "EAN13":12345, "data": {"name": "Cheese", "expdate": "2016-03-12" } }
+{ "request": "insert", "GTIN": "NULL", "data": {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 
-{"request": "list"}
+{ "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 
+{ "request": "list"}
+
+{ "request": "profile", "data":  {"name": "Mario", "last_name": "Viti" , "allergen": ["nuts","berry"]} }
+
+{ "request": "profile", "data":  {"name": "Giulia", "last_name": "Biasci" , "allergen": ["nuts","berry"]} }
+
+
+{ "request": "list"}

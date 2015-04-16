@@ -1,6 +1,7 @@
 #labelApi
 
 import requests
+
 # apikey = '4cy7zxu8hbjfnugdgrnpeekc'
 
 # 'http://api.foodessentials.com/createsession?
@@ -44,6 +45,7 @@ class request:
 		self.status = session.status_code
 		self.session = session.json()
 		self.sessionid =  self.session['session_id']
+		print 'helloe'
 
 	def parseupc(self, upc):
 		upcbit = upc.split();

@@ -17,44 +17,56 @@ from outpan import OutpanApi
 my_api_key='0004d931710b2493c2497fb10e19a146'
 api = OutpanApi(my_api_key)
 
-
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-
 import labelApi
 labelApikey = '4cy7zxu8hbjfnugdgrnpeekc'
-fridgelabelapi = labelApi.request('marioviti.LabelApi','iot_fridge','fridge_01',labelApikey)
-
+user = 'marioviti.LabelApi'
+app = 'iot_fridge'
+dev = 'fridge_01'
 
 class IoTFridge:
     """
         Implements the IoT Fridge API
     """
-
     def __init__(self, dbpath, infile, outfile):
         self.db = sql.connect(dbpath)
         self.cur = self.db.cursor()
         self.infile = infile
         self.outfile = outfile
-        self.unique_id = 0
-
-    # Begin API requests
+        self.api = labelApi.request(user, app, dev, labelApikey)
 
     def req_list(self, reqj):
         resp = { 'response': [], 'success': True }
         for row in self.cur.execute("SELECT * FROM item"):
-            # Each row only contains one thing right now, name...
             resp['response'].append({'data': row })
         print >> self.outfile, json.dumps(resp, indent = 1)
 
     def req_insert(self, reqj):
-        data = (self.unique_id, reqj['EAN13'] ,reqj['data']['name'], reqj['data']['expdate'])
-        self.unique_id=self.unique_id+1
-        self.cur.execute("INSERT INTO item VALUES ( ?, ?, ?, datetime('now','localtime'), ?)", data)
+        if reqj['GTIN'] != 'NULL':
+            labeldata = self.api.getdata(reqj['GTIN'])
+            GTIN = reqj['GTIN']
+            name = labeldata['product_name']
+            ingredients = labeldata['ingredients']
+            expdate = reqj['data']['expdate']
+        else:
+            GTIN = reqj['GTIN']
+            name = reqj['data']['name']
+            ingredients = reqj['data']['ingredients']
+            expdate = reqj['data']['expdate']
+        data = ( GTIN, name, ingredients, expdate)
+        self.cur.execute("INSERT INTO item VALUES ( NULL, ?, ?, ?, datetime('now','localtime'), ?)", data)
         self.db.commit()
         resp = {'response': 'OK', 'success': True}
         print >> self.outfile, json.dumps(resp)
+
+    def req_profile(self, reqj):
+        data = (reqj['data']['name'], reqj['data']['last_name'])
+        self.cur.execute("INSERT INTO profile VALUES (NULL, ?, ?)", data)
+        profile_id = 0
+        for row in self.cur.execute("SELECT * FROM profile"):
+            print row
 
     # End API requests
 
@@ -100,7 +112,6 @@ class IoTFridge:
 if __name__ == '__main__':
     """
         Connect stdin and stdout to accept and emit JSON data
-
         Non-API content is printed to stderr, so it can be redirected
         independently.
     """
@@ -120,4 +131,12 @@ if __name__ == '__main__':
     # print api.get_product("0072830005555")
 
     # output label
-    pp.pprint(fridgelabelapi.getdata('072830005555'))
+    # fridgelabelapi = labelApi.request( user, app, dev, labelApikey)
+
+    # pp.pprint(fridgelabelapi.getdata('072830005555'))
+
+    # print fridgelabelapi.getdata('072830005555')['product_name']
+
+    # print fridgelabelapi.getdata('072830005555')['ingredients']
+
+    print IOTF.api.sessionid 
