@@ -48,9 +48,29 @@ class IoTFridge:
                 i = i+1
         print >> self.outfile, json.dumps(resp, indent = 1)
 
+    def req_remove_item(self, reqj):
+        return {'response': 'OK', 'success': True}
+
+    def req_remove_profile(self, reqj):
+        data = (reqj['data']['name'],reqj['data']['last_name'])
+        self.cur.execute("PRAGMA foreign_keys=ON")
+        self.cur.execute("DELETE FROM profile WHERE name=? AND last_name=?",data)
+        self.db.commit()
+        return {'response': 'OK', 'success': True}
+
+    def req_remove(self, reqj):
+        reqstr = 'req_remove_{0}'.format(reqj['table'])
+        if reqstr in dir(self):
+            resp = getattr(self,reqstr)(reqj)
+        else:
+            resp = {'response': 'I\'m sorry try again', 'success': False}
+        print >> self.outfile, json.dumps(resp, indent = 1)
+
+
     def req_insert(self, reqj):
         if reqj['GTIN'] != 'NULL':
             labeldata = self.api.getdata(reqj['GTIN'])
+            # pp.pprint( labeldata )               
             GTIN = reqj['GTIN']
             name = labeldata['product_name']
             ingredients = labeldata['ingredients']
@@ -73,9 +93,18 @@ class IoTFridge:
         for profile in self.cur.execute("SELECT MAX(ID) FROM profile"):
             profile_id = profile[0]
         for allergen in reqj['data']['allergen']:
-            print allergen
-            data = (profile_id, allergen)
-            self.cur.execute("INSERT INTO allergen VALUES (NULL, ?, ?)", data)
+            allergen_id = 0
+            data = [allergen]
+            for row in self.cur.execute("SELECT ID FROM allergen WHERE allergen.name=?",data):
+                allergen_id = row[0]
+            print allergen_id
+            if allergen_id == 0:
+                self.cur.execute("INSERT INTO allergen VALUES (NULL, ?)", data )
+                for row in self.cur.execute("SELECT MAX(ID) FROM allergen"):
+                    allergen_id = row[0]
+            data = (profile_id,allergen_id)
+            self.cur.execute("INSERT INTO allergenListProfile VALUES (NULL, ?,?)", data )
+        self.db.commit()
         resp = {'response': 'OK', 'success': True}
         print >> self.outfile, json.dumps(resp)
         #for row in self.cur.execute("SELECT * FROM profile"):
@@ -92,6 +121,7 @@ class IoTFridge:
         jsonData = json.loads(req)
         if "request" in jsonData:
             reqstr = 'req_{0}'.format(jsonData['request'])
+            print reqstr
             # Echo the request for easier output debugging
             print req
             if reqstr in dir(self):
