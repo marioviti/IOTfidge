@@ -45,3 +45,21 @@ for session
 
 still need to check what happens when a session time's up
 
+BIGOVEN API
+
+marioven
+mv14658@my.bristol.ac.uk
+mario.b1g.O
+Name
+Mario
+Company Name
+database_cw3
+Website
+http://ec2-54-148-187-69.us-west-2.compute.amazonaws.com/
+
+dvxi9G5zZ9MNo2q4888bO0Q1Xh71VZwh
+
+100 req/Hr
+
+http://api.bigoven.com/console
+

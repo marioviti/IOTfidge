@@ -6,27 +6,85 @@
 
 { "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 
+{ "request": "list", "table": "item" }
+
+{ "request": "list", "table": "profile" }
+
+{ "request": "list", "table": "allergen" }
+
+{ "request": "list", "table": "allergenListProfile" }
+
+{ "request": "list", "table": "allergenListItem" }
+
 { "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
+
+{ "request": "list", "table": "item" }
+
+{ "request": "list", "table": "profile" }
+
+{ "request": "list", "table": "allergen" }
+
+{ "request": "list", "table": "allergenListProfile" }
+
+{ "request": "list", "table": "allergenListItem" }
 
 { "request": "profile", "data":  {"name": "Mario", "last_name": "Viti" , "allergen": ["Lactose","berry"]} }
 
-{ "request": "profile", "data":  {"name": "Giulia", "last_name": "Biasci" , "allergen": ["Colors","berry"]} }
+{ "request": "list", "table": "item" }
 
-{ "request": "list" , "table": "item" }
+{ "request": "list", "table": "profile" }
+
+{ "request": "list", "table": "allergen" }
+
+{ "request": "list", "table": "allergenListProfile" }
+
+{ "request": "list", "table": "allergenListItem" }
 
 { "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 
-{ "request": "list", "table": "profile" }
-
-{ "request": "list", "table": "allergen" }
-
-{ "request": "list", "table": "allergenListProfile" }
-
-{ "request": "remove", "table": "profile", "data": {"name": "Mario", "last_name": "Viti"} }
+{ "request": "list", "table": "item" }
 
 { "request": "list", "table": "profile" }
 
 { "request": "list", "table": "allergen" }
 
 { "request": "list", "table": "allergenListProfile" }
+
+{ "request": "list", "table": "allergenListItem" }
+
+{ "request": "profile", "data":  {"name": "Giulia", "last_name": "Biasci" , "allergen": ["Colors","berry"]} }
+
+{ "request": "list", "table": "item" }
+
+{ "request": "list", "table": "profile" }
+
+{ "request": "list", "table": "allergen" }
+
+{ "request": "list", "table": "allergenListProfile" }
+
+{ "request": "list", "table": "allergenListItem" }
+
+{ "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
+
+{ "request": "list", "table": "item" }
+
+{ "request": "list", "table": "profile" }
+
+{ "request": "list", "table": "allergen" }
+
+{ "request": "list", "table": "allergenListProfile" }
+
+{ "request": "list", "table": "allergenListItem" }
+
+{ "request": "demon", "table": "allergenListItem" }
+
+{ "request": "list", "table": "item" }
+
+{ "request": "list", "table": "profile" }
+
+{ "request": "list", "table": "allergen" }
+
+{ "request": "list", "table": "allergenListProfile" }
+
+{ "request": "list", "table": "allergenListItem" }
 

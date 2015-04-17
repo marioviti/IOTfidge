@@ -3,6 +3,8 @@ DROP TABLE IF EXISTS profile;
 DROP TABLE IF EXISTS allergen;
 DROP TABLE IF EXISTS allergenListItem;
 DROP TABLE IF EXISTS allergenListProfile;
+DROP TABLE IF EXISTS persist_item;
+DROP TABLE IF EXISTS persist_allergenListItem;
 
 PRAGMA foreign_keys = ON;
 
@@ -25,6 +27,14 @@ CREATE TABLE persist_item (
 	expdate DATETIME
 	);
 
+CREATE TABLE persist_allergenListItem (
+	ID INTEGER PRIMARY KEY,
+	foodID INTEGER,
+	allergenID INTEGER,
+	FOREIGN KEY(foodID) REFERENCES persist_item(ID) ON DELETE CASCADE,
+	FOREIGN KEY(allergenID) REFERENCES allergen(ID)
+	);
+
 CREATE TABLE profile (
 	ID INTEGER PRIMARY KEY,
 	name TEXT,
@@ -40,7 +50,7 @@ CREATE TABLE allergenListItem (
 	ID INTEGER PRIMARY KEY,
 	foodID INTEGER,
 	allergenID INTEGER,
-	FOREIGN KEY(foodID) REFERENCES persist_item(ID) ON DELETE CASCADE,
+	FOREIGN KEY(foodID) REFERENCES item(ID) ON DELETE CASCADE,
 	FOREIGN KEY(allergenID) REFERENCES allergen(ID)
 	);
 

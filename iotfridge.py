@@ -66,15 +66,23 @@ class IoTFridge:
             resp = {'response': 'I\'m sorry try again', 'success': False}
         print >> self.outfile, json.dumps(resp, indent = 1)
 
+    def req_demon(self, reqj):
+        self.cur.execute("PRAGMA foreign_keys=ON")
+        self.cur.execute("DELETE FROM item")
+        self.db.commit()
+        resp = {'response': 'OK', 'success': True}
+        print >> self.outfile, json.dumps(resp, indent = 1)
 
     def req_insert(self, reqj):
+        allergens=[]
         if reqj['GTIN'] != 'NULL':
             labeldata = self.api.getdata(reqj['GTIN'])
-            # pp.pprint( labeldata )               
+            # pp.pprint(labeldata)             
             GTIN = reqj['GTIN']
             name = labeldata['product_name']
             ingredients = labeldata['ingredients']
             expdate = reqj['data']['expdate']
+            allergens = labeldata['allergens']
         else:
             GTIN = reqj['GTIN']
             name = reqj['data']['name']
@@ -82,6 +90,22 @@ class IoTFridge:
             expdate = reqj['data']['expdate']
         data = ( GTIN, name, ingredients, expdate)
         self.cur.execute("INSERT INTO item VALUES ( NULL, ?, ?, ?, datetime('now','localtime'), ?)", data)
+        for row in self.cur.execute("SELECT MAX(ID) FROM item"):
+            item_id = row[0]
+        for allergen in allergens:
+            if allergen['allergen_value']!=0:
+                allergen_id=0
+                data=[allergen['allergen_name']]
+                for row in self.cur.execute("SELECT ID FROM allergen WHERE allergen.name=?",data):
+                    allergen_id=row[0]
+                if allergen_id!=0:
+                    data=(item_id,allergen_id)
+                else:
+                    self.cur.execute("INSERT INTO allergen VALUES (NULL, ?)", data )
+                    for row in self.cur.execute("SELECT MAX(ID) FROM allergen"):
+                        allergen_id = row[0]
+                    data=(item_id,allergen_id)
+                self.cur.execute("INSERT INTO allergenListItem VALUES (NULL,?,?)",data)
         self.db.commit()
         resp = {'response': 'OK', 'success': True}
         print >> self.outfile, json.dumps(resp)
