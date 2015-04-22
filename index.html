@@ -1,0 +1,93 @@
+
+<div><p>LISTING</p></div>
+<div><a href="http://localhost:8080/list?table=item" target="_blank" >list temp_item</a></div>
+<div><a href="http://localhost:8080/list?table=profile" target="_blank" >list profile</a></div>
+<div><a href="http://localhost:8080/list?table=allergen" target="_blank" >list allergen</a></div>
+<div><a href="http://localhost:8080/list?table=allergenListItem" target="_blank" >list allergenListItem</a></div>
+<div><a href="http://localhost:8080/list?table=allergenListProfile" target="_blank" >list allergenListProfile</a></div>
+<div><a href="http://localhost:8080/list?table=persist_item" target="_blank" >list persist_item</a></div>
+<div><a href="http://localhost:8080/list?table=persist_allergenListItem" target="_blank" >list persist_allergenListItem</a></div>
+<div><p>REMOVE</p></div>
+<div><a href="http://localhost:8080/remove?table=profile&name=Giulia&last_name=Biasci" 
+	target="_blank" >remove example profile Giulia</a></div>
+<div><p>DEMON RUN</p></div>
+<div><a href="http://localhost:8080/demon" target="_blank" >demon run</a></div>
+
+<div>
+
+	<div><p>INSERT FORM</p></div>
+
+	<div><p>profile</p></div>
+	<form action="http://localhost:8080/insert">
+		<input type="hidden" name="table" value="profile">
+		name:<br>
+		<input type="text" name="name">
+		<br>
+		las_tname:<br>
+		<input type="text" name="last_name">
+		<br>
+		Allergen comma separted:<br>
+		<input type="text" name="allergen">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+
+	<div><p>item</p></div>
+	<form action="http://localhost:8080/insert">
+		<input type="hidden" name="table" value="item">
+		GTIN:<br>
+		<input type="text" name="GTIN">
+		<br>
+		name:<br>
+		<input type="text" name="name">
+		<br>
+		ingredients:<br>
+		<input type="text" name="ingredients">
+		<br>
+		expdate:<br>
+		<input type="date" name="expdate">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+
+</div>
+
+<div>
+
+	<div><p>REMOVE FORM</p></div>
+
+	<div><p>profile</p></div>
+	<form action="http://localhost:8080/remove">
+		<input type="hidden" name="table" value="profile">
+		name:<br>
+		<input type="text" name="name">
+		<br>
+		las_tname:<br>
+		<input type="text" name="last_name">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+
+	<div><p>item</p></div>
+
+</div>
+
+<div>
+
+	<div><p>REMOVE FORM</p></div>
+
+	<div><p>persist_item</p></div>
+	<form action="http://localhost:8080/remove">
+		<input type="hidden" name="table" value="persist_item">
+		GTIN:<br>
+		<input type="text" name="name">
+		<br>
+		expdate:<br>
+		<input type="date" name="expdate">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+
+	<div><p>item</p></div>
+
+</div>

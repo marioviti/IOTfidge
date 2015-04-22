@@ -1,0 +1,10 @@
+Bottle v0.12.8 server starting up (using WSGIRefServer())...
+Listening on http://localhost:8080/
+Hit Ctrl-C to quit.
+
+req_insert
+{'table': 'profile', 'request': 'insert', 'data': {'last_name': 'Biasci', 'name': 'Giulia', 'allergen': ['Colors', 'berry']}}
+127.0.0.1 - - [23/Apr/2015 00:33:27] "GET /insert?table=profile&name=Giulia&last_name=Biasci&allergen=Colors,berry HTTP/1.1" 200 35
+req_remove
+{'table': 'profile', 'request': 'remove', 'data': {'last_name': 'Biasci', 'name': 'Giulia'}}
+127.0.0.1 - - [23/Apr/2015 00:34:00] "GET /remove?table=profile&name=Giulia&last_name=Biasci HTTP/1.1" 200 35

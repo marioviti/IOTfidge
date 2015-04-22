@@ -102,6 +102,7 @@ class iotfridgeAPI:
                     print rows_in_in
                     data_in_in = (food_ID, rows_in_in[0], rows_in_in[1])
                     temp_curr_2.execute("INSERT INTO itemdate VALUES (NULL, ?, ?, ?, NULL)",data_in_in)
+        self.db.commit()
         self.cur.execute("PRAGMA foreign_keys=ON")
         self.cur.execute("DELETE FROM item")
         self.db.commit()
@@ -138,7 +139,7 @@ class iotfridgeAPI:
         for allergen in allergens:
             if allergen['allergen_value']!=0:
                 allergen_id=0
-                data=[allergen['allergen_name']]
+                data=[allergen['allergen_name'].upper()]
                 for row in self.cur.execute("SELECT ID FROM allergen WHERE allergen.name=?",data):
                     allergen_id=row[0]
                 if allergen_id!=0:
@@ -166,10 +167,9 @@ class iotfridgeAPI:
             profile_id = profile[0]
         for allergen in reqj['data']['allergen']:
             allergen_id = 0
-            data = [allergen]
+            data = [allergen.upper()]
             for row in self.cur.execute("SELECT ID FROM allergen WHERE allergen.name=?",data):
                 allergen_id = row[0]
-            print allergen_id
             if allergen_id == 0:
                 self.cur.execute("INSERT INTO allergen VALUES (NULL, ?)", data )
                 for row in self.cur.execute("SELECT MAX(ID) FROM allergen"):
@@ -187,9 +187,9 @@ class iotfridgeAPI:
         jsonData = req
         if "request" in jsonData:
             reqstr = 'req_{0}'.format(jsonData['request'])
-            print reqstr
+            print >> sys.stderr, reqstr
             # Echo the request for easier output debugging
-            print req
+            print >> sys.stderr, req
             if reqstr in dir(self):
                 return getattr(self,reqstr)(jsonData)
             else:

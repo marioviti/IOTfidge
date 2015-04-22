@@ -42,25 +42,24 @@ def index():
 			req['table']=query['table']
 			req['data']=datajson
 		else:
-			err_res = dumps({'response':'bad request formatting'})
-			print err_res
+			err_res = dumps({'response':'insert: bad request formatting', 'use': template_req_key_set})
 			return dumps(err_res)	
 	elif query['table'] == 'profile':
 		template_req_key_set = ('table','name','last_name','allergen')
 		data_req_key_set = ( 'name','last_name','allergen' )
 		if check_req_formatting(key_set,template_req_key_set):
-			allergen = [x.strip() for x in query['allergen'].split(',')]
+			#allergen = [x.strip() for x in query['allergen'].split(',')]
+			allergen = [ x.strip() for x in query['allergen'].split(',') ]
 			for key in data_req_key_set:
 				datajson[key]=query[key]
 			req['table']=query['table']
 			req['data']=datajson
 			req['data']['allergen']=allergen
 		else:
-			err_res = dumps({'response':'bad request formatting'})
-			print err_res
+			err_res = dumps({'response':'insert: bad request formatting', 'use': template_req_key_set})
 			return dumps(err_res)
 	else:
-		err_res = dumps({'response':'bad request formatting'})
+		err_res = dumps({'response':'insert: bad request formatting', 'tables': ['profile','item']})
 		return dumps(err_res)
 	res={}
 	res = IOTF.processRequest(req)
@@ -71,28 +70,28 @@ def index():
 	req={ "request": "remove", "table": "" }
 	datajson={}
 	query=request.query
-	if query['table'] == 'item':
-		print "will do"
-		req = {}
-	elif  query['table'] == 'profile':
+	if query['table'] == 'persist_item':
+		template_req_key_set = ('table','GTIN','expdate')
+		data_req_key_set = ('GTIN','expdate')
+		key_set = query.keys()
+	elif query['table'] == 'profile':
 		template_req_key_set = ('table','name','last_name')
 		data_req_key_set = ('name','last_name')
 		key_set = query.keys()
-		if check_req_formatting(key_set,template_req_key_set):
+	else:
+		err_res = dumps({'response':'remove: bad request formatting', 'tables': ['profile']})
+		return dumps(err_res)
+	if check_req_formatting(key_set,template_req_key_set):
+		req['table']=query['table']
+		for key in data_req_key_set:
+			datajson[key]=query[key]
 			req['table']=query['table']
-			for key in data_req_key_set:
-				datajson[key]=query[key]
-				req['table']=query['table']
-				req['data']=datajson
+			req['data']=datajson
 		res = IOTF.processRequest(req)
 		return dumps(res)
 	else:
-		err_res = dumps({'response':'bad request formatting'})
-		print err_res
+		err_res = dumps({'response':'remove: bad request formatting', 'use': template_req_key_set})
 		return dumps(err_res)
-	res = IOTF.processRequest(req)
-	return dumps(res)
-
 
 @route('/list')
 def index():

@@ -12,20 +12,18 @@ http://localhost:8080/insert?table=profile&name=Mario&last_name=Viti&allergen=La
 
 { "request": "list", "table": "item" }
 
-http://localhost:8080/list?table=profile
+http://localhost:8080/list?table=item
 
-{ "request": "list", "table": "allergen" }
+http://localhost:8080/list?table=profile
 
 http://localhost:8080/list?table=allergen
 
-{ "request": "list", "table": "allergenListItem" }
-
 http://localhost:8080/list?table=allergenListItem
-
-{ "request": "list", "table": "allergenListProfile" }
 
 http://localhost:8080/list?table=allergenListProfile
 
-{'table': 'profile', 'request': 'remove', 'data': {'last_name': 'Biasci', 'name': 'Giulia'}}
+http://localhost:8080/list?table=persist_item
+
+http://localhost:8080/list?table=persist_allergenListItem
 
 http://localhost:8080/remove?table=profile&name=Giulia&last_name=Biasci

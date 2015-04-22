@@ -4,4 +4,4 @@
 # This initialises the database:
 sqlite3 test.db < test.sql
 
-python iotfridge_route.py test.db
+python iotfridge_route.py test.db 2>> log
