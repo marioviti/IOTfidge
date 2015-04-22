@@ -1,0 +1,31 @@
+{ "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
+
+http://localhost:8080/insert?table=item&GTIN=072830005555&name=Cheese&ingredients=MILK&expdate=2016-03-12
+
+{ "request": "insert", "table": "profile" , "data":  {"name": "Giulia", "last_name": "Biasci" , "allergen": ["Colors","berry"]} }
+
+http://localhost:8080/insert?table=profile&name=Giulia&last_name=Biasci&allergen=Colors,berry
+
+{ "request": "profile", "data":  {"name": "Mario", "last_name": "Viti" , "allergen": ["Lactose","berry"]} }
+
+http://localhost:8080/insert?table=profile&name=Mario&last_name=Viti&allergen=Lactose,berry
+
+{ "request": "list", "table": "item" }
+
+http://localhost:8080/list?table=profile
+
+{ "request": "list", "table": "allergen" }
+
+http://localhost:8080/list?table=allergen
+
+{ "request": "list", "table": "allergenListItem" }
+
+http://localhost:8080/list?table=allergenListItem
+
+{ "request": "list", "table": "allergenListProfile" }
+
+http://localhost:8080/list?table=allergenListProfile
+
+{'table': 'profile', 'request': 'remove', 'data': {'last_name': 'Biasci', 'name': 'Giulia'}}
+
+http://localhost:8080/remove?table=profile&name=Giulia&last_name=Biasci

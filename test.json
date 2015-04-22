@@ -4,6 +4,8 @@
 
 { "request": "insert", "GTIN": "NULL", "data": {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 
+{ "request": "insert", "GTIN": "NULL", "data": {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
+
 { "request": "insert", "GTIN": "072830005555", "data":  {"name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 
 { "request": "list", "table": "item" }
@@ -87,4 +89,10 @@
 { "request": "list", "table": "allergenListProfile" }
 
 { "request": "list", "table": "allergenListItem" }
+
+{ "request": "list", "table": "persist_item" }
+
+{ "request": "list", "table": "persist_allergenListItem" }
+
+{ "request": "list", "table": "itemdate" }
 

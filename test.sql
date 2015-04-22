@@ -5,26 +5,23 @@ DROP TABLE IF EXISTS allergenListItem;
 DROP TABLE IF EXISTS allergenListProfile;
 DROP TABLE IF EXISTS persist_item;
 DROP TABLE IF EXISTS persist_allergenListItem;
-
-PRAGMA foreign_keys = ON;
-
-CREATE TABLE item (
-	ID INTEGER PRIMARY KEY,
-	GTIN TEXT,
-	name TEXT,
-	ingredients TEXT,
-	indate DATETIME DEFAULT (datetime('now','localtime')),
-	expdate DATETIME
-	);
+DROP TABLE IF EXISTS itemdate;
 
 CREATE TABLE persist_item (
 	ID INTEGER PRIMARY KEY,
 	GTIN TEXT,
 	name TEXT,
-	qt INTEGER,
 	ingredients TEXT,
+	qt INTEGER
+	);
+
+CREATE TABLE itemdate(
+	ID INTEGER PRIMARY KEY,
+	foodID INTEGER, 
 	indate DATETIME,
-	expdate DATETIME
+	expdate DATETIME,
+	outdate DATETIME DEFAULT NULL,
+	FOREIGN KEY(foodID) REFERENCES persist_item(ID) ON DELETE CASCADE
 	);
 
 CREATE TABLE persist_allergenListItem (
@@ -33,6 +30,15 @@ CREATE TABLE persist_allergenListItem (
 	allergenID INTEGER,
 	FOREIGN KEY(foodID) REFERENCES persist_item(ID) ON DELETE CASCADE,
 	FOREIGN KEY(allergenID) REFERENCES allergen(ID)
+	);
+
+CREATE TABLE item (
+	ID INTEGER PRIMARY KEY,
+	GTIN TEXT,
+	name TEXT,
+	ingredients TEXT,
+	indate DATETIME DEFAULT (datetime('now','localtime')),
+	expdate DATETIME
 	);
 
 CREATE TABLE profile (

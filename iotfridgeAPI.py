@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-    iotfridge.py - An IoT fridge API
+    iotfridgeAPI.py - An IoT fridge API
 
     This software acts as the API between an SQLite database
     and the interfaces to the fridge.
@@ -26,15 +26,13 @@ user = 'marioviti.LabelApi'
 app = 'iot_fridge'
 dev = 'fridge_01'
 
-class IoTFridge:
+class iotfridgeAPI:
     """
         Implements the IoT Fridge API
     """
-    def __init__(self, dbpath, infile, outfile):
+    def __init__(self, dbpath):
         self.db = sql.connect(dbpath)
         self.cur = self.db.cursor()
-        self.infile = infile
-        self.outfile = outfile
         self.api = labelApi.request(user, app, dev, labelApikey)
 
     def req_list(self, reqj):
@@ -46,69 +44,90 @@ class IoTFridge:
             for entry in row:
                 resp['response']['records'].append({self.cur.description[i][0]: entry})
                 i = i+1
-        print >> self.outfile, json.dumps(resp, indent = 1)
+        return resp
 
     def req_remove_item(self, reqj):
-        return {'response': 'OK', 'success': True}
+        resp = { 'response':'NOT IMPLEMENTED', 'success': True }
+        json.dumps(resp, indent = 1)
 
     def req_remove_profile(self, reqj):
         data = (reqj['data']['name'],reqj['data']['last_name'])
         self.cur.execute("PRAGMA foreign_keys=ON")
         self.cur.execute("DELETE FROM profile WHERE name=? AND last_name=?",data)
+        if self.cur.rowcount == 0:
+            res = { 'response': 'NO ROW AFFECTED', 'success': True }
+        else:
+            res = { 'response': 'OK', 'success': True }
         self.db.commit()
-        return {'response': 'OK', 'success': True}
+        return res
 
     def req_remove(self, reqj):
         reqstr = 'req_remove_{0}'.format(reqj['table'])
         if reqstr in dir(self):
             resp = getattr(self,reqstr)(reqj)
         else:
-            resp = {'response': 'I\'m sorry try again', 'success': False}
-        print >> self.outfile, json.dumps(resp, indent = 1)
+            resp = { 'response': 'req_remove: BAD REQUEST FORMATTING ', 'success': False }
+        return resp
 
     def req_demon(self, reqj):
+        # THIS SHOULD NEVER FAIL
+        temp_curr=self.db.cursor()
+        temp_curr_2=self.db.cursor()
         for rows in self.cur.execute("SELECT DISTINCT GTIN, NAME, ingredients, COUNT(ID), ID FROM item GROUP BY GTIN, NAME, ingredients"):
             data = (rows[0],rows[1],rows[2],rows[3])
             print rows
-            temp_curr=self.db.cursor()
-            temp_curr.execute("INSERT INTO persist_item VALUES(NULL,?,?,?,?)",data)
-            food_ID=0
-            for row_in in temp_curr.execute("SELECT MAX(ID) FROM persist_item"):
-                food_ID=row_in[0]
-            data = (rows[0],rows[1],rows[2])
-            temp_curr_2=self.db.cursor()
-            for rows_in_in in temp_curr.execute("SELECT indate, expdate FROM item WHERE GTIN = ? AND NAME = ? AND ingredients = ?",data):
-                print rows_in_in
-                data_in_in = (food_ID, rows_in_in[0], rows_in_in[1])
-                temp_curr_2.execute("INSERT INTO itemdate VALUES (NULL, ?, ?, ?, NULL)",data_in_in)
-            data=[rows[4]]
-            for rows_in_in in temp_curr.execute("SELECT allergen.name, allergen.ID FROM allergen JOIN allergenListItem ON allergen.ID=allergenListItem.allergenID WHERE allergenListItem.foodID=? ",data):
-                print rows_in_in
-                data_in_in = (food_ID, rows_in_in[1])
-                temp_curr_2.execute("INSERT INTO persist_allergenListItem VALUES (NULL, ?, ?)",data_in_in)
-                # temp_curr_2.execute("INSERT INTO ")
-            #for row_in temp_curr.execute("SELECT COUNT DISINCT ID FROM item WHERE GTIN = ? AND NAME = ? AND ingredients = ?",data)
-            #temp_curr.execute("INSERT INTO persist_item VALUES(NULL,?,?,?)",data)
-            #for rows_in_in in temp_curr.execute("SELECT indate,expdate FROM item WHERE GTIN = ? AND NAME = ? AND ingredients = ?",data):
-                #print rows_in
+            updata = (rows[3],rows[0],rows[1],rows[2])
+            temp_curr.execute("UPDATE persist_item SET qt = qt + ? WHERE GTIN = ? AND NAME = ? AND ingredients = ?", updata)
+            if temp_curr.rowcount == 0:
+                temp_curr.execute("INSERT INTO persist_item VALUES(NULL,?,?,?,?)",data)
+                food_ID=0
+                for row_in in temp_curr.execute("SELECT MAX(ID) FROM persist_item"):
+                    food_ID=row_in[0]
+                data = (rows[0],rows[1],rows[2])
+                for rows_in_in in temp_curr.execute("SELECT indate, expdate FROM item WHERE GTIN = ? AND NAME = ? AND ingredients = ?",data):
+                    print rows_in_in
+                    data_in_in = (food_ID, rows_in_in[0], rows_in_in[1])
+                    temp_curr_2.execute("INSERT INTO itemdate VALUES (NULL, ?, ?, ?, NULL)",data_in_in)
+                data=[rows[4]]
+                for rows_in_in in temp_curr.execute("SELECT allergen.name, allergen.ID FROM allergen JOIN allergenListItem ON allergen.ID=allergenListItem.allergenID WHERE allergenListItem.foodID=? ",data):
+                    print rows_in_in
+                    data_in_in = (food_ID, rows_in_in[1])
+                    temp_curr_2.execute("INSERT INTO persist_allergenListItem VALUES (NULL, ?, ?)",data_in_in)
+            else:
+                food_ID=0
+                data = (rows[0],rows[1],rows[2])
+                for row_in in temp_curr.execute("SELECT ID FROM persist_item WHERE GTIN = ? AND NAME = ? AND ingredients = ?",data):
+                    food_ID=row_in[0]
+                for rows_in_in in temp_curr.execute("SELECT indate, expdate FROM item WHERE GTIN = ? AND NAME = ? AND ingredients = ?",data):
+                    print rows_in_in
+                    data_in_in = (food_ID, rows_in_in[0], rows_in_in[1])
+                    temp_curr_2.execute("INSERT INTO itemdate VALUES (NULL, ?, ?, ?, NULL)",data_in_in)
         self.cur.execute("PRAGMA foreign_keys=ON")
         self.cur.execute("DELETE FROM item")
         self.db.commit()
         resp = {'response': 'OK', 'success': True}
-        print >> self.outfile, json.dumps(resp, indent = 1)
+        return resp
 
-    def req_insert(self, reqj):
+    def req_insert(self,reqj):
+        reqstr = 'req_insert_{0}'.format(reqj['table'])
+        if reqstr in dir(self):
+            return getattr(self,reqstr)(reqj)
+        else:
+            resp = { 'response': 'req_insert: BAD REQUEST FORMATTING FOR INSERT' , 'success': False }
+            return resp
+
+    def req_insert_item(self, reqj):
+        print "in insert_item"
         allergens=[]
-        if reqj['GTIN'] != 'NULL':
-            labeldata = self.api.getdata(reqj['GTIN'])
-            # pp.pprint(labeldata)             
-            GTIN = reqj['GTIN']
+        if reqj['data']['GTIN'] != 'NULL':
+            labeldata = self.api.getdata(reqj['data']['GTIN'])
+            GTIN = reqj['data']['GTIN']
             name = labeldata['product_name']
             ingredients = labeldata['ingredients']
             expdate = reqj['data']['expdate']
             allergens = labeldata['allergens']
         else:
-            GTIN = reqj['GTIN']
+            GTIN = reqj['data']['GTIN']
             name = reqj['data']['name']
             ingredients = reqj['data']['ingredients']
             expdate = reqj['data']['expdate']
@@ -132,9 +151,14 @@ class IoTFridge:
                 self.cur.execute("INSERT INTO allergenListItem VALUES (NULL,?,?)",data)
         self.db.commit()
         resp = {'response': 'OK', 'success': True}
-        print >> self.outfile, json.dumps(resp)
+        return resp
 
-    def req_profile(self, reqj):
+    def req_insert_profile(self, reqj):
+        """
+            reqj has name, last_name, allergen list.
+            name and last_name are insert in profile table,
+            allergen list are inserted in allergen table
+        """
         data = (reqj['data']['name'], reqj['data']['last_name'])
         self.cur.execute("INSERT INTO profile VALUES (NULL, ?, ?)", data)
         profile_id = 0
@@ -154,26 +178,20 @@ class IoTFridge:
             self.cur.execute("INSERT INTO allergenListProfile VALUES (NULL, ?,?)", data )
         self.db.commit()
         resp = {'response': 'OK', 'success': True}
-        print >> self.outfile, json.dumps(resp)
-        #for row in self.cur.execute("SELECT * FROM profile"):
-            #print row
-
-    # End API requests
+        return resp
 
     def processRequest(self, req):
         """
-            Takes a JSON request, does some simple checking, and tries to call
-            the appropriate method to handle the request. The called method is
-            responsible for any output.
+            Takes a JSON request from the router
         """
-        jsonData = json.loads(req)
+        jsonData = req
         if "request" in jsonData:
             reqstr = 'req_{0}'.format(jsonData['request'])
             print reqstr
             # Echo the request for easier output debugging
             print req
             if reqstr in dir(self):
-                getattr(self,reqstr)(jsonData)
+                return getattr(self,reqstr)(jsonData)
             else:
                 print >> sys.stderr, "ERROR: {0} not implemented".format(
                     jsonData['request'])
@@ -181,53 +199,8 @@ class IoTFridge:
                         'response': "{0} not implemented".format(
                             jsonData['request']),
                         'success': False}
-                print >> self.outfile, json.dumps(errorResp)
+                return errorResp
         else:
-                print >> sys.stderr, "ERROR: No request attribute in JSON"
-
-    def run(self):
-        """
-            Read data input, assume a blank line signifies that the buffered
-            data should now be parsed as JSON and acted upon
-        """
-        lines = []
-        while True:
-            line = self.infile.readline()
-            if line == '': break
-            lines.append(line.strip())
-            if len(lines) > 1 and lines[-1] == '':
-                self.processRequest( ''.join(lines) )
-                lines = []
-
-
-if __name__ == '__main__':
-    """
-        Connect stdin and stdout to accept and emit JSON data
-        Non-API content is printed to stderr, so it can be redirected
-        independently.
-    """
-    if len(sys.argv) != 2:
-        print >> sys.stderr, "Usage: python iotfridge.py dbfilename"
-        sys.exit(1)
-    print >> sys.stderr, "Starting IoTFridge..."
-    IOTF = IoTFridge(sys.argv[1], sys.stdin, sys.stdout)
-    print >> sys.stderr, "Ready."
-    try:
-        IOTF.run()
-    except KeyboardInterrupt:
-        print >> sys.stderr, "Received interrupt, quitting..."
-    print >> sys.stderr, "Done"
-
-    # outpan test
-    # print api.get_product("0072830005555")
-
-    # output label
-    # fridgelabelapi = labelApi.request( user, app, dev, labelApikey)
-
-    # pp.pprint(fridgelabelapi.getdata('072830005555'))
-
-    # print fridgelabelapi.getdata('072830005555')['product_name']
-
-    # print fridgelabelapi.getdata('072830005555')['ingredients']
-
-    print IOTF.api.sessionid 
+            print >> sys.stderr, "ERROR: No request attribute in JSON"
+            errorResp = {'response': 'no request found' ,'success': False }
+            return errorResp

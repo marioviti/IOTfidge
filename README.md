@@ -10,7 +10,9 @@ dependencies
 outpan 	-> 	parse_this 	-> 	nose
 			requests
 
-profile
+bottle
+
+Outpan
 
 mario0utpan
 mv14658@my.bristol.ac.uk
