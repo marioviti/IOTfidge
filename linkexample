@@ -2,6 +2,8 @@
 
 http://localhost:8080/insert?table=item&GTIN=072830005555&name=Cheese&ingredients=MILK&expdate=2016-03-12
 
+http://localhost:8080/insert?table=item&GTIN=076840100477&name=IceCream&ingredients=MILK&expdate=2016-03-12
+
 { "request": "insert", "table": "profile" , "data":  {"name": "Giulia", "last_name": "Biasci" , "allergen": ["Colors","berry"]} }
 
 http://localhost:8080/insert?table=profile&name=Giulia&last_name=Biasci&allergen=Colors,berry
@@ -25,5 +27,7 @@ http://localhost:8080/list?table=allergenListProfile
 http://localhost:8080/list?table=persist_item
 
 http://localhost:8080/list?table=persist_allergenListItem
+
+http://localhost:8080/list?table=itemdate
 
 http://localhost:8080/remove?table=profile&name=Giulia&last_name=Biasci

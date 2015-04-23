@@ -8,3 +8,33 @@ req_insert
 req_remove
 {'table': 'profile', 'request': 'remove', 'data': {'last_name': 'Biasci', 'name': 'Giulia'}}
 127.0.0.1 - - [23/Apr/2015 00:34:00] "GET /remove?table=profile&name=Giulia&last_name=Biasci HTTP/1.1" 200 35
+Bottle v0.12.8 server starting up (using WSGIRefServer())...
+Listening on http://localhost:8080/
+Hit Ctrl-C to quit.
+
+req_insert
+{'table': 'profile', 'request': 'insert', 'data': {'last_name': 'Viti', 'name': 'Mario', 'allergen': ['Lactose', 'Nuts']}}
+127.0.0.1 - - [23/Apr/2015 13:30:45] "GET /insert?table=profile&name=Mario&last_name=Viti&allergen=Lactose%2CNuts HTTP/1.1" 200 35
+127.0.0.1 - - [23/Apr/2015 13:30:45] "GET /favicon.ico HTTP/1.1" 404 742
+req_list
+{'table': 'item', 'request': 'list'}
+127.0.0.1 - - [23/Apr/2015 13:30:53] "GET /list?table=item HTTP/1.1" 200 63
+req_list
+{'table': 'profile', 'request': 'list'}
+127.0.0.1 - - [23/Apr/2015 13:30:56] "GET /list?table=profile HTTP/1.1" 200 117
+req_list
+{'table': 'allergen', 'request': 'list'}
+127.0.0.1 - - [23/Apr/2015 13:30:59] "GET /list?table=allergen HTTP/1.1" 200 126
+req_list
+{'table': 'allergenListItem', 'request': 'list'}
+127.0.0.1 - - [23/Apr/2015 13:31:05] "GET /list?table=allergenListItem HTTP/1.1" 200 75
+req_list
+{'table': 'allergenListProfile', 'request': 'list'}
+127.0.0.1 - - [23/Apr/2015 13:31:10] "GET /list?table=allergenListProfile HTTP/1.1" 200 172
+req_list
+{'table': 'profile', 'request': 'list'}
+127.0.0.1 - - [23/Apr/2015 13:31:30] "GET /list?table=profile HTTP/1.1" 200 117
+Bottle v0.12.8 server starting up (using WSGIRefServer())...
+Listening on http://localhost:8080/
+Hit Ctrl-C to quit.
+

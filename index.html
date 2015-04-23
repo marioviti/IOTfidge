@@ -1,5 +1,6 @@
 
 <div><p>LISTING</p></div>
+
 <div><a href="http://localhost:8080/list?table=item" target="_blank" >list temp_item</a></div>
 <div><a href="http://localhost:8080/list?table=profile" target="_blank" >list profile</a></div>
 <div><a href="http://localhost:8080/list?table=allergen" target="_blank" >list allergen</a></div>
@@ -7,11 +8,12 @@
 <div><a href="http://localhost:8080/list?table=allergenListProfile" target="_blank" >list allergenListProfile</a></div>
 <div><a href="http://localhost:8080/list?table=persist_item" target="_blank" >list persist_item</a></div>
 <div><a href="http://localhost:8080/list?table=persist_allergenListItem" target="_blank" >list persist_allergenListItem</a></div>
-<div><p>REMOVE</p></div>
-<div><a href="http://localhost:8080/remove?table=profile&name=Giulia&last_name=Biasci" 
-	target="_blank" >remove example profile Giulia</a></div>
-<div><p>DEMON RUN</p></div>
+<div><a href="http://localhost:8080/list?table=itemdate" target="_blank" >list itemdate</a></div>
+
+<div><p>CLOSE THE DOOR</p></div>
 <div><a href="http://localhost:8080/demon" target="_blank" >demon run</a></div>
+<div><p>SPECIAL REQ</p></div>
+<div><a href="http://localhost:8080/show_allergies" target="_blank" >show_allergies</a></div>
 
 <div>
 
@@ -69,17 +71,12 @@
 	</form>
 
 	<div><p>item</p></div>
-
-</div>
-
-<div>
-
-	<div><p>REMOVE FORM</p></div>
-
-	<div><p>persist_item</p></div>
 	<form action="http://localhost:8080/remove">
-		<input type="hidden" name="table" value="persist_item">
+		<input type="hidden" name="table" value="item">
 		GTIN:<br>
+		<input type="text" name="GTIN">
+		<br>
+		name:<br>
 		<input type="text" name="name">
 		<br>
 		expdate:<br>
@@ -88,6 +85,19 @@
 		<input type="submit" value="Submit">
 	</form>
 
-	<div><p>item</p></div>
+	<div><p>persist_item</p></div>
+	<form action="http://localhost:8080/remove">
+		<input type="hidden" name="table" value="persist_item">
+		GTIN:<br>
+		<input type="text" name="GTIN">
+		<br>
+		name:<br>
+		<input type="text" name="name">
+		<br>
+		expdate:<br>
+		<input type="date" name="expdate">
+		<br>
+		<input type="submit" value="Submit">
+	</form>
 
 </div>

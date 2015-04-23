@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS allergenListProfile;
 DROP TABLE IF EXISTS persist_item;
 DROP TABLE IF EXISTS persist_allergenListItem;
 DROP TABLE IF EXISTS itemdate;
+DROP TABLE IF EXISTS doorLog;
 
 CREATE TABLE persist_item (
 	ID INTEGER PRIMARY KEY,
@@ -15,7 +16,7 @@ CREATE TABLE persist_item (
 	qt INTEGER
 	);
 
-CREATE TABLE itemdate(
+CREATE TABLE itemdate (
 	ID INTEGER PRIMARY KEY,
 	foodID INTEGER, 
 	indate DATETIME,
@@ -66,4 +67,10 @@ CREATE TABLE allergenListProfile (
 	allergenID INTEGER,
 	FOREIGN KEY(profileID) REFERENCES profile(ID) ON DELETE CASCADE,
 	FOREIGN KEY(allergenID) REFERENCES allergen(ID)
+	);
+
+CREATE TABLE doorLog (
+	ID INTEGER PRIMARY KEY,
+	opendate DATETIME DEFAULT (datetime('now','localtime')),
+	closedate DATETIME DEFAULT NULL
 	);

@@ -25,6 +25,12 @@ def index():
 	ret = IOTF.processRequest(req)
     	return dumps(ret)
 
+@route('/show_allergies')
+def index():
+	req = { "request" : "show_allergies" }
+	ret = IOTF.processRequest(req)
+    	return dumps(ret)
+
 #{ "request": "insert", "table": "item" , "data": { "GTIN": "NULL", "name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
 #{ "request": "insert", "table": "item" , "data":  {"name": "Giulia", "last_name": "Biasci" , "allergen": ["Colors","berry"]} }
 @route('/insert')
@@ -70,9 +76,9 @@ def index():
 	req={ "request": "remove", "table": "" }
 	datajson={}
 	query=request.query
-	if query['table'] == 'persist_item':
-		template_req_key_set = ('table','GTIN','expdate')
-		data_req_key_set = ('GTIN','expdate')
+	if query['table'] == 'item' or query['table'] == 'persist_item':
+		template_req_key_set = ('table','GTIN','name','expdate')
+		data_req_key_set = ('GTIN','name','expdate')
 		key_set = query.keys()
 	elif query['table'] == 'profile':
 		template_req_key_set = ('table','name','last_name')

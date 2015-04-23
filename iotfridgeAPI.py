@@ -34,6 +34,27 @@ class iotfridgeAPI:
         self.db = sql.connect(dbpath)
         self.cur = self.db.cursor()
         self.api = labelApi.request(user, app, dev, labelApikey)
+        self.open_door_flag = False
+
+    def close_door():
+        if self.open_door_flag is True:
+            self.open_door_flag = False
+
+    def close_door():
+        if self.open_door_flag is False:
+            self.open_door_flag = True
+
+    def req_show_allergies(self, reqj):
+        resp = { 'response': {'records' : []}, 'success': True }
+        query = "SELECT DISTINCT persist_item.name, profile.name, profile.last_name"+" FROM persist_item JOIN persist_allergenListItem"+" ON persist_item.ID = persist_allergenListItem.foodID"+" JOIN allergenListProfile ON persist_allergenListItem.allergenID=allergenListProfile.allergenID"+" JOIN profile ON profile.ID=allergenListProfile.profileID"
+        i = 0
+        for row in self.cur.execute(query):
+            i = 0
+            for entry in row:
+                resp['response']['records'].append({self.cur.description[i][0]: entry})
+                i = i+1
+        self.db.commit()
+        return resp
 
     def req_list(self, reqj):
         resp = { 'response': { 'table': reqj['table'] , 'records' : []}, 'success': True }
@@ -44,11 +65,51 @@ class iotfridgeAPI:
             for entry in row:
                 resp['response']['records'].append({self.cur.description[i][0]: entry})
                 i = i+1
+        self.db.commit()
         return resp
 
+    def req_remove_persist_item(self, reqj):
+        res = { 'response': 'NOT IMPLEMENTED', 'success': True }
+        if reqj['data']['GTIN'] is not "NULL":
+            data = (reqj['data']['GTIN'],reqj['data']['expdate']) 
+            food_id = 0
+            qt = 0
+            for row in self.cur.execute("SELECT persist_item.ID, persist_item.qt FROM persist_item JOIN itemdate ON persist_item.ID=itemdate.foodID WHERE GTIN = ? AND expdate = ?",data):
+                food_id = row[0]
+                qt = row[1]
+            res = { 'response': 'NO ROW AFFECTED', 'success': True }
+            if qt>0:
+                data = [food_id]
+                self.cur.execute("UPDATE itemdate SET outdate = datetime('now','localtime') WHERE foodID=?",data)
+                if self.cur.rowcount == 0:
+                    self.db.commit()
+                    return res
+                self.cur.execute("UPDATE persist_item SET qt = qt - 1 WHERE ID=?",data)
+                if self.cur.rowcount == 0:
+                    self.db.commit()
+                    return res
+                else:
+                    self.db.commit()
+                    res = { 'response': 'OK', 'success': True }
+                    return res
+
+            else:
+                self.db.commit()
+                return res
+        return res
+
     def req_remove_item(self, reqj):
-        resp = { 'response':'NOT IMPLEMENTED', 'success': True }
-        json.dumps(resp, indent = 1)
+        res = { 'response': 'NOT IMPLEMENTED', 'success': True }
+        if reqj['data']['GTIN'] is not "NULL":
+            data = (reqj['data']['GTIN'],reqj['data']['expdate'])
+            self.cur.execute("PRAGMA foreign_keys=ON")
+            self.cur.execute("DELETE FROM item WHERE GTIN=? AND expdate=?",data)
+            if self.cur.rowcount == 0:
+                res = { 'response': 'NO ROW AFFECTED', 'success': True }
+            else:
+                res = { 'response': 'OK', 'success': True }
+            self.db.commit()
+        return res
 
     def req_remove_profile(self, reqj):
         data = (reqj['data']['name'],reqj['data']['last_name'])
