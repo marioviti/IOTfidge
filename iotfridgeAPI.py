@@ -13,9 +13,8 @@ import sys
 import sqlite3 as sql
 import json
 
-#from outpan import OutpanApi
-#my_api_key='0004d931710b2493c2497fb10e19a146'
-#api = OutpanApi(my_api_key)
+from outpan import OutpanApi
+my_outpan_api_key='0004d931710b2493c2497fb10e19a146'
 
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
@@ -34,6 +33,7 @@ class iotfridgeAPI:
         self.db = sql.connect(dbpath)
         self.cur = self.db.cursor()
         self.api = labelApi.request(user, app, dev, labelApikey)
+        self.outpan = OutpanApi(my_outpan_api_key)
         self.open_door_flag = False
 
     def close_door():
@@ -126,8 +126,10 @@ class iotfridgeAPI:
         res = { 'response': 'NOT IMPLEMENTED', 'success': True }
         if reqj['data']['GTIN'] is not "NULL":
             data = (reqj['data']['GTIN'],reqj['data']['expdate'])
+            for row in self.cur.execute ("SELECT ID FROM item WHERE GTIN=? AND expdate=? ORDER BY ID DESC LIMIT 1",data):
+                data = [row[0]]
             self.cur.execute("PRAGMA foreign_keys=ON")
-            self.cur.execute("DELETE FROM item WHERE GTIN=? AND expdate=?",data)
+            self.cur.execute("DELETE FROM item WHERE ID=?",data)
             if self.cur.rowcount == 0:
                 res = { 'response': 'NO ROW AFFECTED', 'success': True }
             else:
@@ -213,12 +215,12 @@ class iotfridgeAPI:
         name = ""
         ingredients = ""
         expdate = ""
+        resp = {'response': 'OK', 'success': True}
         if GTIN != 'NULL':
             data = [reqj['data']['GTIN']]
-            query_ret = self.cur.execute("SELECT ID, item_name, ingredients FROM item WHERE GTIN = ?", data)
+            query_ret = self.cur.execute("SELECT ID, item_name, ingredients FROM item WHERE GTIN = ? LIMIT 1", data)
             count=0
             for row in query_ret:
-                print row
                 data = [row[0]]
                 name = row[1]
                 ingredients = row[2]
@@ -230,10 +232,21 @@ class iotfridgeAPI:
             if count == 0:
                 self.db.commit()
                 labeldata = self.api.getdata(reqj['data']['GTIN'])
-                name = labeldata['product_name']
-                ingredients = labeldata['ingredients']
-                expdate = reqj['data']['expdate']
-                allergens = labeldata['allergens']
+                if "product_name" in labeldata.keys():
+                    name = labeldata['product_name']
+                    ingredients = labeldata['ingredients']
+                    expdate = reqj['data']['expdate']
+                    allergens = labeldata['allergens']
+                else:
+                    resp = {'response': 'NO ALLERGEN DATA FOUND', 'success': True}
+                    outpandata = self.outpan.get_product(GTIN)
+                    name = outpandata['name']
+                    ingredients = ""
+                    expdate = reqj['data']['expdate'] 
+                    data = ( GTIN, name, ingredients, expdate)
+                    self.cur.execute("INSERT INTO item VALUES ( NULL, ?, ?, ?, datetime('now','localtime'), ?)", data)
+                    self.db.commit()
+                    return resp
         else:
             GTIN = reqj['data']['GTIN']
             name = reqj['data']['name']
@@ -258,7 +271,6 @@ class iotfridgeAPI:
                     data=(item_id,allergen_id)
                 self.cur.execute("INSERT INTO allergenListItem VALUES (NULL,?,?)",data)
         self.db.commit()
-        resp = {'response': 'OK', 'success': True}
         return resp
 
     def req_insert_profile(self, reqj):
