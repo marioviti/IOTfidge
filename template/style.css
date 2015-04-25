@@ -1,0 +1,10 @@
+#outer_form { 
+    background-color: yellow;
+    width:20%;
+    float: left;
+    padding: 10px;
+}
+
+#field_form { 
+    background-color: blue;
+}

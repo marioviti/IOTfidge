@@ -11,32 +11,32 @@ DROP TABLE IF EXISTS doorLog;
 CREATE TABLE persist_item (
 	ID INTEGER PRIMARY KEY,
 	GTIN TEXT,
-	name TEXT,
+	item_name TEXT,
 	ingredients TEXT,
 	qt INTEGER
 	);
 
 CREATE TABLE itemdate (
 	ID INTEGER PRIMARY KEY,
-	foodID INTEGER, 
+	item_ID INTEGER, 
 	indate DATETIME,
 	expdate DATETIME,
 	outdate DATETIME DEFAULT NULL,
-	FOREIGN KEY(foodID) REFERENCES persist_item(ID) ON DELETE CASCADE
+	FOREIGN KEY(item_ID) REFERENCES persist_item(ID) ON DELETE CASCADE
 	);
 
 CREATE TABLE persist_allergenListItem (
 	ID INTEGER PRIMARY KEY,
-	foodID INTEGER,
-	allergenID INTEGER,
-	FOREIGN KEY(foodID) REFERENCES persist_item(ID) ON DELETE CASCADE,
-	FOREIGN KEY(allergenID) REFERENCES allergen(ID)
+	item_ID INTEGER,
+	allergen_ID INTEGER,
+	FOREIGN KEY(item_ID) REFERENCES persist_item(ID) ON DELETE CASCADE,
+	FOREIGN KEY(allergen_ID) REFERENCES allergen(ID)
 	);
 
 CREATE TABLE item (
 	ID INTEGER PRIMARY KEY,
 	GTIN TEXT,
-	name TEXT,
+	item_name TEXT,
 	ingredients TEXT,
 	indate DATETIME DEFAULT (datetime('now','localtime')),
 	expdate DATETIME
@@ -44,29 +44,29 @@ CREATE TABLE item (
 
 CREATE TABLE profile (
 	ID INTEGER PRIMARY KEY,
-	name TEXT,
-	last_name TEXT
+	profile_name TEXT,
+	profile_last_name TEXT
 	);
 
 CREATE TABLE allergen (
 	ID INTEGER PRIMARY KEY,
-	name TEXT
+	allergen_name TEXT
 	);
 
 CREATE TABLE allergenListItem (
 	ID INTEGER PRIMARY KEY,
-	foodID INTEGER,
-	allergenID INTEGER,
-	FOREIGN KEY(foodID) REFERENCES item(ID) ON DELETE CASCADE,
-	FOREIGN KEY(allergenID) REFERENCES allergen(ID)
+	item_ID INTEGER,
+	allergen_ID INTEGER,
+	FOREIGN KEY(item_ID) REFERENCES item(ID) ON DELETE CASCADE,
+	FOREIGN KEY(allergen_ID) REFERENCES allergen(ID)
 	);
 
 CREATE TABLE allergenListProfile (
 	ID INTEGER PRIMARY KEY,
-	profileID INTEGER,
-	allergenID INTEGER,
-	FOREIGN KEY(profileID) REFERENCES profile(ID) ON DELETE CASCADE,
-	FOREIGN KEY(allergenID) REFERENCES allergen(ID)
+	profile_ID INTEGER,
+	allergen_ID INTEGER,
+	FOREIGN KEY(profile_ID) REFERENCES profile(ID) ON DELETE CASCADE,
+	FOREIGN KEY(allergen_ID) REFERENCES allergen(ID)
 	);
 
 CREATE TABLE doorLog (
