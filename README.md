@@ -15,6 +15,8 @@ iotfridge_route	-> 	bottle
 	
 tester	-> 	pycurl
 
+exel_reader -> openpyxl
+
 
 Outpan
 

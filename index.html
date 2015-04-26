@@ -6,6 +6,11 @@
 
 	<div id="outer_form">
 
+		<p>OPEN DOOR</p>
+		<div>
+			<a href="http://localhost:8080/open_door" target="_blank" >open_door</a>
+		</div>
+
 		<p>INSERT FORM</p>
 
 		<div id="field_form">
@@ -102,6 +107,25 @@
 
 	</div>
 
+	<div id="outer_form">
+
+		<p>REMOVE FORM</p>
+
+		<div id="field_form">
+			<p>profile</p>
+			<form action="http://localhost:8080/open_door_period">
+				from:<br>
+				<input type="date" name="from">
+				<br>
+				to:<br>
+				<input type="date" name="to">
+				<br>
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+
+	</div>
+
 </div>
 
 <div id="outer_form">
@@ -131,6 +155,9 @@
 	<div>
 		<a href="http://localhost:8080/list?table=itemdate" target="_blank" >list itemdate</a>
 	</div>
+	<div>
+		<a href="http://localhost:8080/list?table=doorLog" target="_blank" >list doorLog</a>
+	</div>	
 
 </div>
 
@@ -138,7 +165,7 @@
 
 	<p>CLOSE THE DOOR</p>
 	<div>
-		<a href="http://localhost:8080/demon" target="_blank" >demon run</a>
+		<a href="http://localhost:8080/close_door" target="_blank" >demon run</a>
 	</div>
 	<p>SPECIAL REQ</p>
 	<div>

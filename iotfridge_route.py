@@ -13,6 +13,32 @@ import iotfridgeAPI
 db = sys.argv[1]
 IOTF = iotfridgeAPI.iotfridgeAPI(db)
 
+@route('/open_door_period')
+def index():
+	req = { "request" : "open_door_period" , "from": "" , "to" : "" }
+	query=request.query
+	key_set = query.keys()
+	template_req_key_set = ('from','to')
+	if check_req_formatting(key_set,template_req_key_set):
+		for key in template_req_key_set:
+				req[key]=query[key]
+		ret = IOTF.processRequest(req)
+    	return dumps(ret)
+	err_res = dumps({'response':'open_door_period: bad request formatting', 'use': template_req_key_set})
+	return dumps(err_res)
+
+@route('/open_door')
+def index():
+	req = { "request" : "open_door" }
+	ret = IOTF.processRequest(req)
+    	return dumps(ret)
+
+@route('/close_door')
+def index():
+	req = { "request" : "close_door" }
+	ret = IOTF.processRequest(req)
+    	return dumps(ret)
+
 @route('/show_allergies_food')
 def index():
 	req = { "request" : "show_allergies_food" }

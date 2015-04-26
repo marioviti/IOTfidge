@@ -1,3 +1,5 @@
+from exel_reader import exel_reader
+
 import pycurl
 from StringIO import StringIO
 
@@ -60,10 +62,27 @@ def daily_activity():
 	dtime =  datetime.now() - time
 	return dtime
 
+def insert_list(list,expdate):
+	for el in list:
+		pp.pprint( send_request(insert_item(el,"","",expdate)) )
+	pp.pprint( send_request(close_door()) )
+	pp.pprint( send_request(list_table("persist_item")) )
+
+def remove_persist_item_list(list,expdate):
+	for el in list:
+		pp.pprint( send_request(remove_persist_item(el,"",expdate)) )
+	pp.pprint( send_request(list_table("persist_item")) )
+
 if __name__ == '__main__':
 
-	time_list = []
-	for x in range(0, 2):
-		time_list.append(str(daily_activity()))
+	#time_list = []
+	#for x in range(0, 2):
+	#	time_list.append(str(daily_activity()))
+	#
+	#print time_list
 
-	print time_list
+	e_reader = exel_reader('docs/Cheese.xlsx')
+	UPClist = e_reader.getUPC()
+	remove_persist_item_list(UPClist,"2015-02-02")
+
+

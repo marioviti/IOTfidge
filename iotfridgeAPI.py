@@ -8,6 +8,8 @@
     Remember to initialise a database first!
 """
 
+from datetime import datetime, timedelta
+
 # Libraries that we need
 import sys
 import sqlite3 as sql
@@ -36,13 +38,40 @@ class iotfridgeAPI:
         self.outpan = OutpanApi(my_outpan_api_key)
         self.open_door_flag = False
 
-    def close_door():
-        if self.open_door_flag is True:
-            self.open_door_flag = False
+    def req_open_door_period(self, reqj):
+        data = (reqj['from'],reqj['to'])
+        delta_t = ""
+        acc_t = datetime.now() - datetime.now()
+        flag = False
+        for row in self.cur.execute("SELECT * FROM doorLog WHERE opendate > ? AND closedate < ?", data):
+            delta_t = datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S') - datetime.strptime(row[1], '%Y-%m-%d %H:%M:%S')
+            acc_t = acc_t + delta_t
+            flag = True
+        self.db.commit()
+        if flag:
+            return {'response':'OK', 'time':str(acc_t), 'success':True} 
+        else:            
+            return {'response':'NO ACTIVITY IN THE PERIOD', 'time':0, 'success':True}
 
-    def close_door():
+    def req_open_door(self, reqj):
         if self.open_door_flag is False:
             self.open_door_flag = True
+            self.cur.execute("INSERT INTO doorLog VALUES(NULL,datetime('now','localtime'),NULL)")
+            self.db.commit()
+        return {'response': 'DOOR IS OPEN', 'success': True}
+
+    def req_close_door(self, reqj):
+        if self.open_door_flag is True:
+            self.open_door_flag = False
+            doorLog_ID=0
+            for row in self.cur.execute("SELECT MAX(ID) FROM doorLog"):
+                doorLog_ID=row[0]
+            data=[doorLog_ID]
+            self.cur.execute("UPDATE doorLog SET closedate = datetime('now','localtime') WHERE ID=?",data)
+            self.db.commit()
+            return { "demon": self.req_demon(reqj) , 'response': 'DOOR IS CLOSED', 'success': True}
+        else:
+            return {'response': 'DOOR IS CLOSED ALREADY', 'success': True}
 
     def req_show_allergies_allergen(self, reqj):
         resp = { 'response': {'records' : []}, 'success': True }
@@ -93,6 +122,7 @@ class iotfridgeAPI:
         return resp
 
     def req_remove_persist_item(self, reqj):
+        self.open_door(self, reqj)
         res = { 'response': 'NOT IMPLEMENTED', 'success': True }
         if reqj['data']['GTIN'] is not "NULL":
             data = (reqj['data']['GTIN'],reqj['data']['expdate']) 
@@ -116,7 +146,6 @@ class iotfridgeAPI:
                     self.db.commit()
                     res = { 'response': 'OK', 'success': True }
                     return res
-
             else:
                 self.db.commit()
                 return res
