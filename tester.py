@@ -11,6 +11,9 @@ pp = pprint.PrettyPrinter(indent=4)
 
 from datetime import datetime, timedelta
 
+import sys
+import random
+
 def insert_item(GTIN,name,ingredients,expdate):
 	return "http://localhost:8080/insert?table=item&GTIN="+GTIN+"&name="+name+"&ingredients="+ingredients+"&expdate="+expdate
 
@@ -26,6 +29,9 @@ def list_table(table):
 def close_door():
 	return "http://localhost:8080/demon"
 
+def open_door():
+	return "http://localhost:8080/open_door"
+
 def send_request(req):
 	c.setopt(c.URL, req)
 	c.setopt(c.WRITEDATA, buffer)
@@ -40,33 +46,58 @@ def send_request(req):
 		buffer.truncate(0)
 	return body
 
-def daily_activity():
+def generate_random_expdate():
+	num = random.randint(1, 25)
+	year = 2015+num%3
+	month = 1+num%12
+	day = num
+	date = str(year)+"-"+str(month)+"-"+str(day)
+	return date
 
-	time = datetime.now()
-	for x in range(0, 2):
-		pp.pprint( send_request(insert_item("076840100477","","","2015-01-02")) )
-		pp.pprint( send_request(insert_item("047834060091","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("016000263123","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("728229123477","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("020000197586","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("026200162300","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("835143002433","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("810979001188","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("024321908203","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("053859070663","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("026400405207","","","2015-02-02")) )
-		pp.pprint( send_request(insert_item("041303025666","","","2015-02-02")) )	
-	pp.pprint( send_request(close_door()) )
-	pp.pprint( send_request(list_table("persist_item")) )
+def daily_activity(list):
+	ret = { }
+	i=0
+	j=0
+	timeList = []
+	lenList = len(list)
+	if lenList > 30:
+		lenList = 30
+	sublist = []
+	while i < lenList:
+		while j<10 and i+j<lenList:
+			sublist.append(list[i+j])
+			j=j+1
+		i=i+j
+		j=0
+		for k in range(0,2):
+			pp.pprint( send_request(open_door()) )
+			insert_item_list(sublist,generate_random_expdate())
+			sublist = []
+			time = datetime.now()
+			pp.pprint( send_request(close_door()) )
+			dtime =  datetime.now() - time
+			timeList.append({ 'item':str(i),'time':str(dtime) })
+	return { 'daily': timeList }
 
-	dtime =  datetime.now() - time
-	return dtime
+def insert_list_in_daily(list):
+	lim = 30
+	lenList = len(list)
+	times = len(list)//lim
+	for i in range(0,times):
+		pre_sublist = list[:lim]
+		post_sublist = list[lim:]
+		list = post_sublist
+		print >> sys.stderr,daily_activity(pre_sublist)
 
-def insert_list(list,expdate):
+def insert_item_list(list,expdate):
 	for el in list:
 		pp.pprint( send_request(insert_item(el,"","",expdate)) )
-	pp.pprint( send_request(close_door()) )
-	pp.pprint( send_request(list_table("persist_item")) )
+	pp.pprint( send_request(list_table("item")) )
+
+def remove_item_list(list,expdate):
+	for el in list:
+		pp.pprint( send_request(remove_item(el,"",expdate)) )
+	pp.pprint( send_request(list_table("item")) )
 
 def remove_persist_item_list(list,expdate):
 	for el in list:
@@ -75,14 +106,21 @@ def remove_persist_item_list(list,expdate):
 
 if __name__ == '__main__':
 
-	#time_list = []
-	#for x in range(0, 2):
-	#	time_list.append(str(daily_activity()))
-	#
-	#print time_list
-
 	e_reader = exel_reader('docs/Cheese.xlsx')
 	UPClist = e_reader.getUPC()
-	remove_persist_item_list(UPClist,"2015-02-02")
+	insert_list_in_daily(UPClist)
+	#e_reader.new_doc('docs/Fresh-Vegetables.xlsx')
+	#UPClist = e_reader.getUPC()
+	#insert_list_in_daily(UPClist)
+	#e_reader.new_doc('docs/Milk-and-Soy.xlsx')
+	#UPClist = e_reader.getUPC()
+	#insert_list_in_daily(UPClist)
+	#e_reader.new_doc('docs/SingleStrengthJuice1.xlsx')
+	#UPClist = e_reader.getUPC()
+	#insert_list_in_daily(UPClist)
+	#e_reader.new_doc('docs/WholeGrains.xlsx')
+	#UPClist = e_reader.getUPC()
+	#insert_list_in_daily(UPClist)
+
 
 

@@ -191,10 +191,11 @@ class iotfridgeAPI:
         temp_curr_2=self.db.cursor()
         for rows in self.cur.execute("SELECT DISTINCT GTIN, item_name, ingredients, COUNT(ID), ID FROM item GROUP BY GTIN, item_name, ingredients"):
             data = (rows[0],rows[1],rows[2],rows[3])
-            print rows
             updata = (rows[3],rows[0],rows[1],rows[2])
+            print updata
             temp_curr.execute("UPDATE persist_item SET qt = qt + ? WHERE GTIN = ? AND item_name = ? AND ingredients = ?", updata)
             if temp_curr.rowcount == 0:
+                print data
                 temp_curr.execute("INSERT INTO persist_item VALUES(NULL,?,?,?,?)",data)
                 food_ID=0
                 for row_in in temp_curr.execute("SELECT MAX(ID) FROM persist_item"):
@@ -270,6 +271,8 @@ class iotfridgeAPI:
                     resp = {'response': 'NO ALLERGEN DATA FOUND', 'success': True}
                     outpandata = self.outpan.get_product(GTIN)
                     name = outpandata['name']
+                    if name is None:
+                        name = ""
                     ingredients = ""
                     expdate = reqj['data']['expdate'] 
                     data = ( GTIN, name, ingredients, expdate)

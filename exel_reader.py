@@ -8,6 +8,10 @@ class exel_reader:
         self.wb = load_workbook(filename = doc_path)
         self.sheet_names = self.wb.get_sheet_names()
 
+    def new_doc(self, doc_path):
+        self.wb = load_workbook(filename = doc_path)
+        self.sheet_names = self.wb.get_sheet_names()
+
     def getUPC(self):
     	ret = []
     	for value in  self.wb[self.sheet_names[0]].get_cell_collection():

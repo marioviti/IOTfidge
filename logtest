@@ -1,0 +1,21 @@
+/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/openpyxl/workbook/names/named_range.py:121: UserWarning: Discarded range with reserved name
+  warnings.warn("Discarded range with reserved name")
+{'daily': [{'item': '10', 'time': '0:00:00.003555'}, {'item': '10', 'time': '0:00:00.002020'}, {'item': '20', 'time': '0:00:00.006348'}, {'item': '20', 'time': '0:00:00.001880'}, {'item': '30', 'time': '0:00:00.003222'}, {'item': '30', 'time': '0:00:00.001774'}]}
+{'daily': [{'item': '10', 'time': '0:00:00.003620'}, {'item': '10', 'time': '0:00:00.001427'}, {'item': '20', 'time': '0:00:00.005374'}, {'item': '20', 'time': '0:00:00.001160'}, {'item': '30', 'time': '0:00:00.004164'}, {'item': '30', 'time': '0:00:00.001190'}]}
+{'daily': [{'item': '10', 'time': '0:00:00.004569'}, {'item': '10', 'time': '0:00:00.001102'}, {'item': '20', 'time': '0:00:00.003993'}, {'item': '20', 'time': '0:00:00.001088'}, {'item': '30', 'time': '0:00:00.003171'}, {'item': '30', 'time': '0:00:00.001033'}]}
+Traceback (most recent call last):
+  File "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/StringIO.py", line 208, in write
+    def write(self, s):
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "tester.py", line 111, in <module>
+    insert_list_in_daily(UPClist)
+  File "tester.py", line 90, in insert_list_in_daily
+    print >> sys.stderr,daily_activity(pre_sublist)
+  File "tester.py", line 74, in daily_activity
+    insert_item_list(sublist,generate_random_expdate())
+  File "tester.py", line 94, in insert_item_list
+    pp.pprint( send_request(insert_item(el,"","",expdate)) )
+  File "tester.py", line 38, in send_request
+    c.perform()
+pycurl.error: (23, 'Failed writing body (0 != 55)')
