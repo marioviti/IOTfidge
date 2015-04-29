@@ -69,14 +69,22 @@ def daily_activity(list):
 			j=j+1
 		i=i+j
 		j=0
-		for k in range(0,2):
-			pp.pprint( send_request(open_door()) )
-			insert_item_list(sublist,generate_random_expdate())
-			sublist = []
-			time = datetime.now()
-			pp.pprint( send_request(close_door()) )
-			dtime =  datetime.now() - time
-			timeList.append({ 'item':str(i),'time':str(dtime) })
+		print "ROUND"
+		pp.pprint( send_request(open_door()) )
+		insert_item_list(sublist)
+		time = datetime.now()
+		pp.pprint( send_request(close_door()) )
+		dtime =  datetime.now() - time
+		print { 'insert_item':str(i),'time':str(dtime) }
+		timeList.append({ 'insert_item':str(i),'time':str(dtime) })
+		pp.pprint( send_request(open_door()) )
+		insert_item_list(sublist)
+		sublist = []
+		time = datetime.now()
+		pp.pprint( send_request(close_door()) )
+		dtime =  datetime.now() - time
+		print { 'update_item':str(i),'time':str(dtime) }
+		timeList.append({ 'update_item':str(i),'time':str(dtime) })
 	return { 'daily': timeList }
 
 def insert_list_in_daily(list):
@@ -89,26 +97,23 @@ def insert_list_in_daily(list):
 		list = post_sublist
 		print >> sys.stderr,daily_activity(pre_sublist)
 
-def insert_item_list(list,expdate):
+def insert_item_list(list):
 	for el in list:
-		pp.pprint( send_request(insert_item(el,"","",expdate)) )
-	pp.pprint( send_request(list_table("item")) )
+		pp.pprint( send_request(insert_item(el,"","",generate_random_expdate())) )
 
 def remove_item_list(list,expdate):
 	for el in list:
 		pp.pprint( send_request(remove_item(el,"",expdate)) )
-	pp.pprint( send_request(list_table("item")) )
 
 def remove_persist_item_list(list,expdate):
 	for el in list:
 		pp.pprint( send_request(remove_persist_item(el,"",expdate)) )
-	pp.pprint( send_request(list_table("persist_item")) )
 
 if __name__ == '__main__':
 
 	e_reader = exel_reader('docs/Cheese.xlsx')
-	UPClist = e_reader.getUPC()
-	insert_list_in_daily(UPClist)
+	#UPClist = e_reader.getUPC()
+	#insert_list_in_daily(UPClist)
 	#e_reader.new_doc('docs/Fresh-Vegetables.xlsx')
 	#UPClist = e_reader.getUPC()
 	#insert_list_in_daily(UPClist)
@@ -118,9 +123,9 @@ if __name__ == '__main__':
 	#e_reader.new_doc('docs/SingleStrengthJuice1.xlsx')
 	#UPClist = e_reader.getUPC()
 	#insert_list_in_daily(UPClist)
-	#e_reader.new_doc('docs/WholeGrains.xlsx')
-	#UPClist = e_reader.getUPC()
-	#insert_list_in_daily(UPClist)
+	e_reader.new_doc('docs/WholeGrains.xlsx')
+	UPClist = e_reader.getUPC()
+	insert_list_in_daily(UPClist)
 
 
 

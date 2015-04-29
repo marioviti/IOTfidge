@@ -5,7 +5,10 @@
     This software acts as the API between an SQLite database
     and the interfaces to the fridge.
 
-    Remember to initialise a database first!
+    It depends on two main services LabelApi and Outpan
+    Both labelApi and OutapanApi dependencies must be sutisfied
+
+    I included the acces keys to the remote service as hard coded values in this module
 """
 
 from datetime import datetime, timedelta
@@ -37,6 +40,35 @@ class iotfridgeAPI:
         self.api = labelApi.request(user, app, dev, labelApikey)
         self.outpan = OutpanApi(my_outpan_api_key)
         self.open_door_flag = False
+
+    def req_food_contain(self, reqj):
+        data = reqj['allergen']
+        query = "SELECT DISTINCT persist_item.GTIN, persist_item.item_name FROM persist_item JOIN persist_allergenListItem ON persist_item.ID=persist_allergenListItem.item_ID JOIN allergen ON persist_allergenListItem.allergen_ID=allergen.ID WHERE"
+        i = 0
+        for allergen in data:
+            if i == 0:
+                query = query + " allergen.allergen_name LIKE \'%" + allergen +"%\'"
+                i = i+1
+            else:
+                query = query + " OR allergen.allergen_name LIKE \'%" + allergen +"%\'"
+        retdata = [] 
+        for row in self.cur.execute(query):
+            retdata.append(row)
+        self.db.commit()
+        return {'response':'OK', 'items': retdata, 'success':True} 
+
+    def req_soon_to_expire(self, reqj):
+        data = [reqj['before']]
+        items = []
+        flag = False
+        for row in self.cur.execute("SELECT persist_item.GTIN, persist_item.item_name, itemdate.expdate FROM persist_item JOIN itemdate ON persist_item.ID=itemdate.item_ID WHERE expdate < ?", data):
+            items.append(row)
+            flag = True
+        self.db.commit()
+        if flag:
+            return {'response':'OK', 'items': items, 'success':True} 
+        else:            
+            return {'response':'NO EXPIRING ITEM BEFORE THE SELECTED DATE','success':True}
 
     def req_open_door_period(self, reqj):
         data = (reqj['from'],reqj['to'])
@@ -122,9 +154,8 @@ class iotfridgeAPI:
         return resp
 
     def req_remove_persist_item(self, reqj):
-        self.open_door(self, reqj)
-        res = { 'response': 'NOT IMPLEMENTED', 'success': True }
-        if reqj['data']['GTIN'] is not "NULL":
+        res = res = { 'response': 'ITEM NOT PRESENT, NO ROWS AFFECTED', 'success': True }
+        if reqj['data']['GTIN'] is not "":
             data = (reqj['data']['GTIN'],reqj['data']['expdate']) 
             food_id = 0
             qt = 0
@@ -149,14 +180,55 @@ class iotfridgeAPI:
             else:
                 self.db.commit()
                 return res
+        else:
+            data = (reqj['data']['name'],reqj['data']['expdate'])
+            print data
+            food_id = 0
+            qt = 0
+            for row in self.cur.execute("SELECT persist_item.ID, persist_item.qt FROM persist_item JOIN itemdate ON persist_item.ID=itemdate.item_ID WHERE persist_item.item_name = ? AND itemdate.expdate = ?",data):
+                food_id = row[0]
+                qt = row[1]
+            res = { 'response': 'NO ROW AFFECTED', 'success': True }
+            if qt>0:
+                data = [food_id]
+                self.cur.execute("UPDATE persist_item SET qt = qt - 1 WHERE ID=?",data)
+                if self.cur.rowcount == 0:
+                    self.db.commit()
+                    return res
+                else:
+                    self.db.commit()
+                    res = { 'response': 'OK', 'success': True }
+                    return res
+            else:
+                self.db.commit()
+                return res
         return res
 
     def req_remove_item(self, reqj):
         res = { 'response': 'NOT IMPLEMENTED', 'success': True }
-        if reqj['data']['GTIN'] is not "NULL":
+        if reqj['data']['GTIN'] is not "":
             data = (reqj['data']['GTIN'],reqj['data']['expdate'])
+            flag = False
             for row in self.cur.execute ("SELECT ID FROM item WHERE GTIN=? AND expdate=? ORDER BY ID DESC LIMIT 1",data):
                 data = [row[0]]
+                flag = True
+            if flag == False:
+                return { 'response': 'NO ROW AFFECTED', 'success': True }
+            self.cur.execute("PRAGMA foreign_keys=ON")
+            self.cur.execute("DELETE FROM item WHERE ID=?",data)
+            if self.cur.rowcount == 0:
+                res = { 'response': 'NO ROW AFFECTED', 'success': True }
+            else:
+                res = { 'response': 'OK', 'success': True }
+            self.db.commit()
+        else:
+            data = (reqj['data']['name'],reqj['data']['expdate'])
+            flag = False
+            for row in self.cur.execute ("SELECT ID FROM item WHERE item_name=? AND expdate=? ORDER BY ID DESC LIMIT 1",data):
+                data = [row[0]]
+                flag = True
+            if flag == False:
+                return { 'response': 'NO ROW AFFECTED', 'success': True }
             self.cur.execute("PRAGMA foreign_keys=ON")
             self.cur.execute("DELETE FROM item WHERE ID=?",data)
             if self.cur.rowcount == 0:
@@ -192,31 +264,40 @@ class iotfridgeAPI:
         for rows in self.cur.execute("SELECT DISTINCT GTIN, item_name, ingredients, COUNT(ID), ID FROM item GROUP BY GTIN, item_name, ingredients"):
             data = (rows[0],rows[1],rows[2],rows[3])
             updata = (rows[3],rows[0],rows[1],rows[2])
-            print updata
-            temp_curr.execute("UPDATE persist_item SET qt = qt + ? WHERE GTIN = ? AND item_name = ? AND ingredients = ?", updata)
+            qu = "UPDATE persist_item SET qt = qt + ? WHERE GTIN = ? AND item_name = ? AND ingredients = ?"
+            if data[0] is None:
+                updata = (rows[3],rows[1],rows[2])
+                qu = "UPDATE persist_item SET qt = qt + ? WHERE item_name = ? AND ingredients = ?"
+            temp_curr.execute(qu, updata)
             if temp_curr.rowcount == 0:
-                print data
                 temp_curr.execute("INSERT INTO persist_item VALUES(NULL,?,?,?,?)",data)
                 food_ID=0
                 for row_in in temp_curr.execute("SELECT MAX(ID) FROM persist_item"):
                     food_ID=row_in[0]
                 data = (rows[0],rows[1],rows[2])
-                for rows_in_in in temp_curr.execute("SELECT indate, expdate FROM item WHERE GTIN = ? AND item_name = ? AND ingredients = ?",data):
-                    print rows_in_in
+                qu="SELECT indate, expdate FROM item WHERE GTIN = ? AND item_name = ? AND ingredients = ?"
+                if data[0] is None:
+                    data = (rows[1],rows[2])
+                    qu="SELECT indate, expdate FROM item WHERE item_name = ? AND ingredients = ?"
+                for rows_in_in in temp_curr.execute(qu,data):
                     data_in_in = (food_ID, rows_in_in[0], rows_in_in[1])
                     temp_curr_2.execute("INSERT INTO itemdate VALUES (NULL, ?, ?, ?, NULL)",data_in_in)
                 data=[rows[4]]
                 for rows_in_in in temp_curr.execute("SELECT allergen.allergen_name, allergen.ID FROM allergen JOIN allergenListItem ON allergen.ID=allergenListItem.allergen_ID WHERE allergenListItem.item_ID=? ",data):
-                    print rows_in_in
                     data_in_in = (food_ID, rows_in_in[1])
                     temp_curr_2.execute("INSERT INTO persist_allergenListItem VALUES (NULL, ?, ?)",data_in_in)
             else:
                 food_ID=0
                 data = (rows[0],rows[1],rows[2])
-                for row_in in temp_curr.execute("SELECT ID FROM persist_item WHERE GTIN = ? AND item_name = ? AND ingredients = ?",data):
+                qu = "SELECT ID FROM persist_item WHERE GTIN = ? AND item_name = ? AND ingredients = ?"
+                qu1 = "SELECT indate, expdate FROM item WHERE GTIN = ? AND item_name = ? AND ingredients = ?"
+                if data[0] is None:
+                    data = (rows[1],rows[2])
+                    qu = "SELECT ID FROM persist_item WHERE item_name = ? AND ingredients = ?"
+                    qu1 = "SELECT indate, expdate FROM item WHERE item_name = ? AND ingredients = ?"
+                for row_in in temp_curr.execute(qu,data):
                     food_ID=row_in[0]
-                for rows_in_in in temp_curr.execute("SELECT indate, expdate FROM item WHERE GTIN = ? AND item_name = ? AND ingredients = ?",data):
-                    print rows_in_in
+                for rows_in_in in temp_curr.execute(qu1,data):
                     data_in_in = (food_ID, rows_in_in[0], rows_in_in[1])
                     temp_curr_2.execute("INSERT INTO itemdate VALUES (NULL, ?, ?, ?, NULL)",data_in_in)
         self.db.commit()
@@ -246,7 +327,7 @@ class iotfridgeAPI:
         ingredients = ""
         expdate = ""
         resp = {'response': 'OK', 'success': True}
-        if GTIN != 'NULL':
+        if GTIN is not "":
             data = [reqj['data']['GTIN']]
             query_ret = self.cur.execute("SELECT ID, item_name, ingredients FROM item WHERE GTIN = ? LIMIT 1", data)
             count=0
@@ -284,8 +365,15 @@ class iotfridgeAPI:
             name = reqj['data']['name']
             ingredients = reqj['data']['ingredients']
             expdate = reqj['data']['expdate']
-        data = ( GTIN, name, ingredients, expdate)
-        self.cur.execute("INSERT INTO item VALUES ( NULL, ?, ?, ?, datetime('now','localtime'), ?)", data)
+        if GTIN is not "":
+            data = ( GTIN, name, ingredients, expdate)
+            self.cur.execute("INSERT INTO item VALUES ( NULL, ?, ?, ?, datetime('now','localtime'), ?)", data)
+        else:
+            data = ( name, ingredients, expdate)
+            self.cur.execute("INSERT INTO item VALUES ( NULL, NULL, ?, ?, datetime('now','localtime'), ?)", data)
+            allergens = []
+            for entry in reqj['data']['allergen']:
+                allergens.append({"allergen_value": 2, "allergen_name": entry})
         for row in self.cur.execute("SELECT MAX(ID) FROM item"):
             item_id = row[0]
         for allergen in allergens:

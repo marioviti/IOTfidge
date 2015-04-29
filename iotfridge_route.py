@@ -13,6 +13,39 @@ import iotfridgeAPI
 db = sys.argv[1]
 IOTF = iotfridgeAPI.iotfridgeAPI(db)
 
+@route('/food_contain')
+def index():
+	req = { "request" : "food_contain", "allergen" : "" }
+	query=request.query
+	key_set = query.keys()
+	template_req_key_set = ['allergen']
+	if check_req_formatting(key_set,template_req_key_set):
+		allergen = []
+		for item in [ x.strip() for x in request.url.split('&') ]:
+			if 'allergen' in item:
+				allergen.append([x.strip() for x in item.split('=')][1])
+		req['allergen']=allergen
+		ret = IOTF.processRequest(req)
+		return dumps(ret)
+	else:
+		err_res = dumps({'response':'food_contain: bad request formatting', 'use': template_req_key_set})
+		return dumps(err_res)
+
+@route('/soon_to_expire')
+def index():
+	req = { "request" : "soon_to_expire" , "before": ""}
+	query=request.query
+	key_set = query.keys()
+	print key_set
+	template_req_key_set = ['before']
+	if check_req_formatting(key_set,template_req_key_set):
+		for key in template_req_key_set:
+				req[key]=query[key]
+		ret = IOTF.processRequest(req)
+		return dumps(ret)
+	err_res = dumps({'response':'soon_to_expire: bad request formatting', 'use': template_req_key_set})
+	return dumps(err_res)
+
 @route('/open_door_period')
 def index():
 	req = { "request" : "open_door_period" , "from": "" , "to" : "" }
@@ -57,8 +90,6 @@ def index():
 	ret = IOTF.processRequest(req)
     	return dumps(ret)
 
-#{ "request": "insert", "table": "item" , "data": { "GTIN": "NULL", "name": "Cheese", "ingredients": "MILK", "expdate": "2016-03-12" } }
-#{ "request": "insert", "table": "item" , "data":  {"name": "Giulia", "last_name": "Biasci" , "allergen": ["Colors","berry"]} }
 @route('/insert')
 def index():
 	req = { "request" : "insert" , "table": "" , "data" : "{}" }
@@ -68,11 +99,23 @@ def index():
 	if query['table'] == 'item':
 		template_req_key_set = ('table','GTIN','name','ingredients','expdate')
 		data_req_key_set = ( 'GTIN','name','ingredients','expdate')
+		template_req_key_set2 = ('table','GTIN','name','ingredients','expdate','allergen')
+		data_req_key_set2 = ( 'GTIN','name','ingredients','expdate','allergen')
 		if check_req_formatting(key_set,template_req_key_set):
 			for key in data_req_key_set:
 				datajson[key]=query[key]
 			req['table']=query['table']
 			req['data']=datajson
+		elif check_req_formatting(key_set,template_req_key_set2):
+			allergen = []
+			for item in [ x.strip() for x in request.url.split('&') ]:
+				if 'allergen' in item:
+					allergen.append([x.strip() for x in item.split('=')][1])
+			for key in data_req_key_set:
+				datajson[key]=query[key]
+			req['table']=query['table']
+			req['data']=datajson
+			req['data']['allergen']=allergen
 		else:
 			err_res = dumps({'response':'insert: bad request formatting', 'use': template_req_key_set})
 			return dumps(err_res)	
@@ -80,8 +123,10 @@ def index():
 		template_req_key_set = ('table','name','last_name','allergen')
 		data_req_key_set = ( 'name','last_name','allergen' )
 		if check_req_formatting(key_set,template_req_key_set):
-			#allergen = [x.strip() for x in query['allergen'].split(',')]
-			allergen = [ x.strip() for x in query['allergen'].split(',') ]
+			allergen = []
+			for item in [ x.strip() for x in request.url.split('&') ]:
+				if 'allergen' in item:
+					allergen.append([x.strip() for x in item.split('=')][1])
 			for key in data_req_key_set:
 				datajson[key]=query[key]
 			req['table']=query['table']
@@ -119,6 +164,7 @@ def index():
 			datajson[key]=query[key]
 			req['table']=query['table']
 			req['data']=datajson
+		print req
 		res = IOTF.processRequest(req)
 		return dumps(res)
 	else:
@@ -144,6 +190,5 @@ def index():
 def index():
 	res = IOTF.processRequest({ "request": "demon" })
 	return dumps(res)
-
 
 run(host='localhost', port=8080)

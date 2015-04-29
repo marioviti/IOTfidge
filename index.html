@@ -23,8 +23,13 @@
 				las_tname:<br>
 				<input type="text" name="last_name">
 				<br>
-				Allergen comma separted:<br>
-				<input type="text" name="allergen">
+				Allergen multiple select:<br>
+				<select name="allergen" multiple>
+  				<option value="LACTOSE">LACTOSE</option>
+  				<option value="WHEAT">WHEAT</option>
+  				<option value="SULFITES">SULFITES</option>
+  				<option value="SOYBEAN">SOYBEAN</option>
+				</select>
 				<br>
 				<input type="submit" value="Submit">
 			</form>
@@ -42,6 +47,14 @@
 				<br>
 				ingredients:<br>
 				<input type="text" name="ingredients">
+				<br>
+				Allergen multiple select:<br>
+				<select name="allergen" multiple>
+  				<option value="LACTOSE">LACTOSE</option>
+  				<option value="WHEAT">WHEAT</option>
+  				<option value="SULFITES">SULFITES</option>
+  				<option value="SOYBEAN">SOYBEAN</option>
+				</select>
 				<br>
 				expdate:<br>
 				<input type="date" name="expdate">
@@ -112,13 +125,39 @@
 		<p>HOW LONG WAS THE DOOR OPEN FORM... TO...</p>
 
 		<div id="field_form">
-			<p>profile</p>
 			<form action="http://localhost:8080/open_door_period">
 				from:<br>
 				<input type="date" name="from">
 				<br>
 				to:<br>
 				<input type="date" name="to">
+				<br>
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+
+		<p>EXPIRING BEFORE</p>
+
+		<div id="field_form">
+			<form action="http://localhost:8080/soon_to_expire">
+				before:<br>
+				<input type="date" name="before">
+				<br>
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+
+		<p>FOOD CONTAINING</p>
+
+		<div id="field_form">
+			<form action="http://localhost:8080/food_contain">
+				Allergen multiple select:<br>
+				<select name="allergen" multiple>
+  				<option value="LACTOSE">LACTOSE</option>
+  				<option value="WHEAT">WHEAT</option>
+  				<option value="SULFITES">SULFITES</option>
+  				<option value="SOYBEAN">SOYBEAN</option>
+				</select>
 				<br>
 				<input type="submit" value="Submit">
 			</form>
