@@ -7,9 +7,12 @@
 
 <div id="info">
 	<p>SMART FRIDGE</p>
-		<p>info: before inserting or removing from item, opend the door. 
-			after insertions are done close the door, if you forget to open the door, on closing the door will look as it is still open, just open and close again. A subset of the operations (special req) require user, password authentication,
-			Here hare some GTIN to see functionality at work: 076840100477, 047834060091, 016000263123, 020000197586, 053859070663</p>
+		<p>info: before inserting or removing from item, opend the door.<br>
+			after insertions close the door, if you forget to open the door,just open and close again.<br> A subset of the operations(special req) require user, password authentication,<br>
+			Here hare some GTIN to see functionality at work: 076840100477, 047834060091, 016000263123, 020000197586, 053859070663.<br>
+			!- If a GTIN is not specified, data inserted in the text fields and the mutliple select field will be inserted to the database.<br>
+			!- Profile and USER are not the same thing: as a user may be willing to see all the profiles I kept them separated, additional constraint can be added by an higer level application.
+		</p>
 
 		<a class="pure-button" href="img/smartFridge.png" target="blank" >
 			check db ER
@@ -19,7 +22,7 @@
 <div id= "sidebar">
 
 	<div id="left_form">
-		<p>CREATE USR</p>
+		<p>CREATE USER</p>
 	
 			<form class="pure-form pure-form-stacked" action="http://localhost:8080/create_usr_passwd">
 				<fieldset class="pure-group">
@@ -107,23 +110,7 @@
 
 		<p>INSERT FORM</p>
 
-		<p>profile</p>
-		<form class="pure-form pure-form-stacked" action="http://localhost:8080/insert">
-			<input type="hidden" name="table" value="profile">
-			<fieldset class="pure-group">
-				<input type="text" class="pure-input-1-2" placeholder="name" name="name">
-				<input type="text" class="pure-input-1-2" placeholder="last_name" name="last_name">
-			</fieldset>
-			Allergen<br>
-				<select name="allergen" multiple>
-	  			<option value="LACTOSE">LACTOSE</option>
-	  			<option value="WHEAT">WHEAT</option>
-	  			<option value="SULFITES">SULFITES</option>
-	  			<option value="SOYBEAN">SOYBEAN</option>
-			</select>
-			<br>
-			<input type="submit" value="Submit" class="pure-button pure-button-primary" >
-		</form>	
+		
 
 		<div id="field_form">
 			<p>item</p>
@@ -148,25 +135,29 @@
 			</form>
 		</div>
 
+		<p>profile</p>
+		<form class="pure-form pure-form-stacked" action="http://localhost:8080/insert">
+			<input type="hidden" name="table" value="profile">
+			<fieldset class="pure-group">
+				<input type="text" class="pure-input-1-2" placeholder="name" name="name">
+				<input type="text" class="pure-input-1-2" placeholder="last_name" name="last_name">
+			</fieldset>
+			Allergen<br>
+				<select name="allergen" multiple>
+	  			<option value="LACTOSE">LACTOSE</option>
+	  			<option value="WHEAT">WHEAT</option>
+	  			<option value="SULFITES">SULFITES</option>
+	  			<option value="SOYBEAN">SOYBEAN</option>
+			</select>
+			<br>
+			<input type="submit" value="Submit" class="pure-button pure-button-primary" >
+		</form>	
+
 	</div>
 
 	<div id="middle_form">
 
 		<p>REMOVE FORM</p>
-
-		<div id="field_form">
-			<p>profile</p>
-			<form class="pure-form pure-form-stacked" action="http://localhost:8080/remove">
-				<input type="hidden" name="table" value="profile">
-				<fieldset class="pure-group">
-					<input type="text" class="pure-input-1-2" placeholder="name" name="name">
-					<input type="text" class="pure-input-1-2" placeholder="last_name" name="last_name">
-				</fieldset>
-				<br>
-				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
-			</form>
-		</div>
-
 			
 		<div id="field_form">
 			<p>item from temporary table</p>
@@ -193,6 +184,19 @@
 				</fieldset>
 				expdate:<br>
 				<input type="date" name="expdate">
+				<br>
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
+			</form>
+		</div>
+
+		<div id="field_form">
+			<p>profile</p>
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/remove">
+				<input type="hidden" name="table" value="profile">
+				<fieldset class="pure-group">
+					<input type="text" class="pure-input-1-2" placeholder="name" name="name">
+					<input type="text" class="pure-input-1-2" placeholder="last_name" name="last_name">
+				</fieldset>
 				<br>
 				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
 			</form>
@@ -251,9 +255,8 @@
 
 		<p>SPECIAL REQ</p>
 
-
 		<div id="field_form">
-			<p>profile to item</p>
+			<p>profile to item CHECK</p>
 				<form class="pure-form pure-form-stacked" action="http://localhost:8080/show_allergies_food">
 					<fieldset class="pure-group">
 						<input type="text" class="pure-input-1-2" placeholder="usr" name="usr">

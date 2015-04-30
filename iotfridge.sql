@@ -8,6 +8,9 @@ DROP TABLE IF EXISTS persist_allergenListItem;
 DROP TABLE IF EXISTS itemdate;
 DROP TABLE IF EXISTS doorLog;
 DROP TABLE IF EXISTS users_data;
+DROP VIEW IF EXISTS itemToAllergen;
+DROP VIEW IF EXISTS itemToProfile;
+DROP VIEW IF EXISTS allergenToProfile;
 
 CREATE TABLE users_data (
 	ID INTEGER PRIMARY KEY,
@@ -82,3 +85,13 @@ CREATE TABLE doorLog (
 	opendate DATETIME DEFAULT (datetime('now','localtime')),
 	closedate DATETIME DEFAULT NULL
 	);
+
+CREATE VIEW itemToAllergen AS
+	SELECT DISTINCT persist_item.item_name, allergen.allergen_name FROM persist_item JOIN persist_allergenListItem ON persist_item.ID = persist_allergenListItem.item_ID JOIN allergen ON allergen.ID=persist_allergenListItem.allergen_ID;
+
+CREATE VIEW itemToProfile AS
+	SELECT DISTINCT persist_item.item_name, profile.profile_name, profile.profile_last_name FROM persist_item JOIN persist_allergenListItem ON persist_item.ID = persist_allergenListItem.item_ID JOIN allergenListProfile ON persist_allergenListItem.allergen_ID=allergenListProfile.allergen_ID JOIN profile ON profile.ID=allergenListProfile.profile_ID;
+
+CREATE VIEW allergenToProfile AS
+    SELECT DISTINCT profile.profile_name, profile.profile_last_name, allergen.allergen_name FROM profile JOIN allergenListProfile ON profile.ID = allergenListProfile.profile_ID JOIN allergen ON allergen.ID=allergenListProfile.allergen_ID;
+

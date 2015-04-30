@@ -5,7 +5,7 @@ def get_hash_salt(passwd):
 	ret ={"hash": "", "salt":""} 
 	i = 0
 	salt = ""
-	while i < 32:
+	while i < 64:
 		a = os.urandom(1)
 		if a.isalnum():
 			i = i + 1

@@ -39,7 +39,10 @@ class iotfridgeAPI:
     def __init__(self, dbpath):
         self.db = sql.connect(dbpath)
         self.cur = self.db.cursor()
-        self.api = labelApi.request(user, app, dev, labelApikey)
+        try:
+            self.api = labelApi.request(user, app, dev, labelApikey)
+        except:
+            print >> sys.stderr, "NO CONNECION"
         self.outpan = OutpanApi(my_outpan_api_key)
         self.open_door_flag = False
 
@@ -132,7 +135,8 @@ class iotfridgeAPI:
         if self.req_check_passwd(reqj) == False:
             return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
-        query = "SELECT DISTINCT profile.profile_name, profile.profile_last_name, allergen.allergen_name"+" FROM profile JOIN allergenListProfile"+" ON profile.ID = allergenListProfile.profile_ID"+" JOIN allergen ON allergen.ID=allergenListProfile.allergen_ID"
+        #query = "SELECT DISTINCT profile.profile_name, profile.profile_last_name, allergen.allergen_name"+" FROM profile JOIN allergenListProfile"+" ON profile.ID = allergenListProfile.profile_ID"+" JOIN allergen ON allergen.ID=allergenListProfile.allergen_ID"
+        query = "SELECT * FROM allergenToProfile"
         i = 0
         for row in self.cur.execute(query):
             i = 0
@@ -146,7 +150,7 @@ class iotfridgeAPI:
         if self.req_check_passwd(reqj) == False:
             return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
-        query = "SELECT DISTINCT persist_item.item_name, allergen.allergen_name"+" FROM persist_item JOIN persist_allergenListItem"+" ON persist_item.ID = persist_allergenListItem.item_ID"+" JOIN allergen ON allergen.ID=persist_allergenListItem.allergen_ID"
+        query = "SELECT * FROM itemToAllergen"
         i = 0
         for row in self.cur.execute(query):
             i = 0
@@ -160,7 +164,7 @@ class iotfridgeAPI:
         if self.req_check_passwd(reqj) == False:
             return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
-        query = "SELECT DISTINCT persist_item.item_name, profile.profile_name, profile.profile_last_name"+" FROM persist_item JOIN persist_allergenListItem"+" ON persist_item.ID = persist_allergenListItem.item_ID"+" JOIN allergenListProfile ON persist_allergenListItem.allergen_ID=allergenListProfile.allergen_ID"+" JOIN profile ON profile.ID=allergenListProfile.profile_ID"
+        query = "SELECT * FROM itemToProfile"
         i = 0
         for row in self.cur.execute(query):
             i = 0
