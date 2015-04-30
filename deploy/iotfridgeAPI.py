@@ -30,8 +30,6 @@ user = 'marioviti.LabelApi'
 app = 'iot_fridge'
 dev = 'fridge_01'
 
-import iotfridge_hash
-
 class iotfridgeAPI:
     """
         Implements the IoT Fridge API
@@ -42,27 +40,6 @@ class iotfridgeAPI:
         self.api = labelApi.request(user, app, dev, labelApikey)
         self.outpan = OutpanApi(my_outpan_api_key)
         self.open_door_flag = False
-
-    def req_check_passwd(self, reqj):
-        passwd = reqj['passwd']
-        data = [reqj['usr']]
-        for row in self.cur.execute("SELECT passwd,salt FROM users_data WHERE usr = ? ", data):
-            salt = row[1]
-            pass_salt = iotfridge_hash.hash_with_salt(salt,passwd)
-            if pass_salt['hash'] == row[0]:
-                return True
-        return False
-
-    def req_create_usr_passwd(self, reqj):
-        passwd = reqj['passwd']
-        pass_salt = iotfridge_hash.get_hash_salt(passwd)
-        data = (reqj['usr'],pass_salt['hash'],pass_salt['salt'])
-        self.cur.execute("INSERT INTO users_data VALUES(NULL,?,?,?)",data)
-        if self.cur.rowcount == 0:
-            self.db.commit()
-            return {'response':'ERROR INSERTING DATA', 'success':False }
-        self.db.commit()
-        return {'response':'OK','success':True } 
 
     def req_food_contain(self, reqj):
         data = reqj['allergen']
@@ -84,7 +61,7 @@ class iotfridgeAPI:
         data = [reqj['before']]
         items = []
         flag = False
-        for row in self.cur.execute("SELECT persist_item.GTIN, persist_item.item_name, itemdate.expdate FROM persist_item JOIN itemdate ON persist_item.ID=itemdate.item_ID WHERE persist_item.qt > 0 AND itemdate.expdate < ?", data):
+        for row in self.cur.execute("SELECT persist_item.GTIN, persist_item.item_name, itemdate.expdate FROM persist_item JOIN itemdate ON persist_item.ID=itemdate.item_ID WHERE expdate < ?", data):
             items.append(row)
             flag = True
         self.db.commit()
@@ -129,8 +106,6 @@ class iotfridgeAPI:
             return {'response': 'DOOR IS CLOSED ALREADY', 'success': True}
 
     def req_show_allergies_allergen(self, reqj):
-        if self.req_check_passwd(reqj) == False:
-            return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
         query = "SELECT DISTINCT profile.profile_name, profile.profile_last_name, allergen.allergen_name"+" FROM profile JOIN allergenListProfile"+" ON profile.ID = allergenListProfile.profile_ID"+" JOIN allergen ON allergen.ID=allergenListProfile.allergen_ID"
         i = 0
@@ -143,8 +118,6 @@ class iotfridgeAPI:
         return resp
 
     def req_show_allergies_allergenListItem(self, reqj):
-        if self.req_check_passwd(reqj) == False:
-            return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
         query = "SELECT DISTINCT persist_item.item_name, allergen.allergen_name"+" FROM persist_item JOIN persist_allergenListItem"+" ON persist_item.ID = persist_allergenListItem.item_ID"+" JOIN allergen ON allergen.ID=persist_allergenListItem.allergen_ID"
         i = 0
@@ -157,8 +130,6 @@ class iotfridgeAPI:
         return resp
 
     def req_show_allergies_food(self, reqj):
-        if self.req_check_passwd(reqj) == False:
-            return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
         query = "SELECT DISTINCT persist_item.item_name, profile.profile_name, profile.profile_last_name"+" FROM persist_item JOIN persist_allergenListItem"+" ON persist_item.ID = persist_allergenListItem.item_ID"+" JOIN allergenListProfile ON persist_allergenListItem.allergen_ID=allergenListProfile.allergen_ID"+" JOIN profile ON profile.ID=allergenListProfile.profile_ID"
         i = 0

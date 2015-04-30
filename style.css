@@ -1,10 +1,24 @@
-#outer_form { 
-    background-color: yellow;
-    width:20%;
+#info { 
+
+    padding: 20px;
+}
+
+#left_form { 
+    width:15%;
     float: left;
+    padding: 20px;
+}
+
+#middle_form { 
+	float: left;
+    width:18%;
     padding: 10px;
 }
 
-#field_form { 
-    background-color: blue;
+#button { 
+	width: 80%;
+}
+
+#field_form{
+
 }

@@ -1,5 +1,5 @@
 #routing 
-from bottle import route, run, template, response, request, server_names, ServerAdapter
+from bottle import route, run, template, response, request
 response.content_type = 'application/json'
 
 #misc
@@ -12,38 +12,6 @@ check_req_formatting = lambda x, y: collections.Counter(x) == collections.Counte
 import iotfridgeAPI
 db = sys.argv[1]
 IOTF = iotfridgeAPI.iotfridgeAPI(db)
-
-# Due to a problem in Installing pyOpenSSL the HTTPS server is disables
-#class MySSLCherryPy(ServerAdapter):  
-#	def run(self, handler):  
-#		from cherrypy import wsgiserver
-#		server = wsgiserver.CherryPyWSGIServer((self.host, self.port), handler) 
-#        # If cert variable is has a valid path, SSL will be used
-#        # You can set it to None to disable SSL  
-#		cert = 'server.pem' # certificate path   
-#		server.ssl_certificate = cert 
-#		server.ssl_private_key = cert
-#		try:  
-#			server.start()  
-#		finally:  
-#			server.stop()  
-#   
-#server_names['mysslcherrypy'] = MySSLCherryPy 
-
-@route('/create_usr_passwd')
-def index():
-	req = { "request" : "create_usr_passwd", "usr" : "" , "passwd" : "" }
-	query=request.query
-	key_set = query.keys()
-	template_req_key_set = ("usr","passwd")
-	if check_req_formatting(key_set,template_req_key_set):
-		for key in template_req_key_set:
-				req[key]=query[key]
-		ret = IOTF.processRequest(req)
-		return dumps(ret)
-	else:
-		err_res = dumps({'response':'food_contain: bad request formatting', 'use': template_req_key_set})
-		return dumps(err_res)
 
 @route('/food_contain')
 def index():
@@ -106,48 +74,21 @@ def index():
 
 @route('/show_allergies_food')
 def index():
-	req = { "request" : "show_allergies_food" , "usr": "", "passwd": "" }
-	query=request.query
-	print query
-	key_set = query.keys()
-	template_req_key_set = ('usr','passwd')
-	if check_req_formatting(key_set,template_req_key_set):
-		for key in template_req_key_set:
-			req[key]=query[key]
-		ret = IOTF.processRequest(req)
-		return dumps(ret)
-	err_res = dumps({'response':'insert: bad request formatting', 'use': template_req_key_set})
-	return err_res
+	req = { "request" : "show_allergies_food" }
+	ret = IOTF.processRequest(req)
+    	return dumps(ret)
 
 @route('/show_allergies_allergen')
 def index():
-	req = { "request" : "show_allergies_allergen" , "usr": "", "passwd": "" }
-	query=request.query
-	print query
-	key_set = query.keys()
-	template_req_key_set = ('usr','passwd')
-	if check_req_formatting(key_set,template_req_key_set):
-		for key in template_req_key_set:
-			req[key]=query[key]
-		ret = IOTF.processRequest(req)
-		return dumps(ret)
-	err_res = dumps({'response':'insert: bad request formatting', 'use': template_req_key_set})
-	return err_res
+	req = { "request" : "show_allergies_allergen" }
+	ret = IOTF.processRequest(req)
+    	return dumps(ret)
 
 @route('/show_allergies_allergenListItem')
 def index():
-	req = { "request" : "show_allergies_allergenListItem" , "usr": "", "passwd": "" }
-	query=request.query
-	print query
-	key_set = query.keys()
-	template_req_key_set = ('usr','passwd')
-	if check_req_formatting(key_set,template_req_key_set):
-		for key in template_req_key_set:
-			req[key]=query[key]
-		ret = IOTF.processRequest(req)
-		return dumps(ret)
-	err_res = dumps({'response':'insert: bad request formatting', 'use': template_req_key_set})
-	return err_res
+	req = { "request" : "show_allergies_allergenListItem" }
+	ret = IOTF.processRequest(req)
+    	return dumps(ret)
 
 @route('/insert')
 def index():
@@ -250,6 +191,4 @@ def index():
 	res = IOTF.processRequest({ "request": "demon" })
 	return dumps(res)
 
-# Due to a problem in Installing pyOpenSSL the HTTPS server is disables
-#run(host='localhost', port=8080, server='mysslcherrypy')
 run(host='localhost', port=8080)

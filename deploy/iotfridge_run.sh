@@ -1,5 +1,5 @@
 #!/bin/bash
-# Escution script for the server app
+# Eecution script for the server app
 
 # This initialises the database:
 sqlite3 iotfridge.db < iotfridge.sql

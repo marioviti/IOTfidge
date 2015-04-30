@@ -1,157 +1,237 @@
-<head>
+<head>	
+
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
 <link rel="stylesheet" type="text/css" href="style.css">
+
 </head>
 
-<div>
+<div id="info">
+	<p>SMART FRIDGE</p>
+		<p>info: before inserting or removing from item, opend the door. 
+			after insertions are done close the door, if you forget to open the door, on closing the door will look as it is still open, just open and close again. A subset of the operations (special req) require user, password authentication,
+			Here hare some GTIN to see functionality at work: 076840100477, 047834060091, 016000263123, 020000197586, 053859070663</p>
 
-	<div id="outer_form">
+		<a class="pure-button" href="img/smartFridge.png" target="blank" >
+			check db ER
+		</a>
+</div>
 
-		<p>OPEN DOOR</p>
+<div id= "sidebar">
+
+	<div id="left_form">
+		<p>CREATE USR</p>
+	
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/create_usr_passwd">
+				<fieldset class="pure-group">
+					<input type="text" class="pure-input-1-2" placeholder="usr" name="usr">
+					<input type="password" class="pure-input-1-2" placeholder="passwd" name="passwd">
+				<br>
+				 </fieldset>
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
+			</form>	
 		<div>
-			<a href="http://localhost:8080/open_door" target="_blank" >open_door</a>
+			<a id="button" class="pure-button" href="http://localhost:8080/open_door" ><div>OPEN DOOR</div></a>
 		</div>
+		<br>
+		<div>
+			<a id="button" class="pure-button" href="http://localhost:8080/close_door" ><div>CLOSE THE DOOR</div></a>
+		</div>
+	
+	<p>LISTING</p>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=item" >
+			temp_item
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=profile" >
+			profile
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=allergen" >
+			allergen
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=allergenListItem" >
+			allergenListItem
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=allergenListProfile" >
+			allergenListProfile
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=persist_item" >
+			persist_item
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=persist_allergenListItem" >
+			persist_allergenListItem
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=itemdate" >
+			itemdate
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=doorLog" >
+			doorLog
+		</a>
+	</div>
+	<br>
+	<div>
+		<a id="button" class="pure-button" href="http://localhost:8080/list?table=users_data" >
+			list users_data
+		</a>
+	</div>
+	<br>	
+
+	</div>
+
+</div>
+
+	<div id="middle_form">
 
 		<p>INSERT FORM</p>
 
-		<div id="field_form">
-			<p>profile</p>
-			<form id="field_form" action="http://localhost:8080/insert">
-				<input type="hidden" name="table" value="profile">
-				name:<br>
-				<input type="text" name="name">
-				<br>
-				las_tname:<br>
-				<input type="text" name="last_name">
-				<br>
-				Allergen multiple select:<br>
+		<p>profile</p>
+		<form class="pure-form pure-form-stacked" action="http://localhost:8080/insert">
+			<input type="hidden" name="table" value="profile">
+			<fieldset class="pure-group">
+				<input type="text" class="pure-input-1-2" placeholder="name" name="name">
+				<input type="text" class="pure-input-1-2" placeholder="last_name" name="last_name">
+			</fieldset>
+			Allergen<br>
 				<select name="allergen" multiple>
-  				<option value="LACTOSE">LACTOSE</option>
-  				<option value="WHEAT">WHEAT</option>
-  				<option value="SULFITES">SULFITES</option>
-  				<option value="SOYBEAN">SOYBEAN</option>
-				</select>
-				<br>
-				<input type="submit" value="Submit">
-			</form>
-		</div>
+	  			<option value="LACTOSE">LACTOSE</option>
+	  			<option value="WHEAT">WHEAT</option>
+	  			<option value="SULFITES">SULFITES</option>
+	  			<option value="SOYBEAN">SOYBEAN</option>
+			</select>
+			<br>
+			<input type="submit" value="Submit" class="pure-button pure-button-primary" >
+		</form>	
 
 		<div id="field_form">
 			<p>item</p>
-			<form action="http://localhost:8080/insert">
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/insert">
 				<input type="hidden" name="table" value="item">
-				GTIN:<br>
-				<input type="text" name="GTIN">
-				<br>
-				name:<br>
-				<input type="text" name="name">
-				<br>
-				ingredients:<br>
-				<input type="text" name="ingredients">
-				<br>
-				Allergen multiple select:<br>
+				<fieldset class="pure-group">
+					<input type="text" class="pure-input-1-2" placeholder="GTIN" name="GTIN">
+					<input type="text" class="pure-input-1-2" placeholder="name" name="name">
+					<input type="text" class="pure-input-1-2" placeholder="ingredients" name="ingredients">
+				</fieldset>
+				Allergen<br>
 				<select name="allergen" multiple>
   				<option value="LACTOSE">LACTOSE</option>
   				<option value="WHEAT">WHEAT</option>
   				<option value="SULFITES">SULFITES</option>
   				<option value="SOYBEAN">SOYBEAN</option>
 				</select>
-				<br>
 				expdate:<br>
 				<input type="date" name="expdate">
 				<br>
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
 			</form>
 		</div>
 
 	</div>
 
-	<div id="outer_form">
+	<div id="middle_form">
 
 		<p>REMOVE FORM</p>
 
 		<div id="field_form">
 			<p>profile</p>
-			<form action="http://localhost:8080/remove">
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/remove">
 				<input type="hidden" name="table" value="profile">
-				name:<br>
-				<input type="text" name="name">
+				<fieldset class="pure-group">
+					<input type="text" class="pure-input-1-2" placeholder="name" name="name">
+					<input type="text" class="pure-input-1-2" placeholder="last_name" name="last_name">
+				</fieldset>
 				<br>
-				las_tname:<br>
-				<input type="text" name="last_name">
-				<br>
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
 			</form>
 		</div>
 
 			
 		<div id="field_form">
-			<p>item</p>
-			<form action="http://localhost:8080/remove">
+			<p>item from temporary table</p>
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/remove">
 				<input type="hidden" name="table" value="item">
-				GTIN:<br>
-				<input type="text" name="GTIN">
-				<br>
-				name:<br>
-				<input type="text" name="name">
-				<br>
+				<fieldset class="pure-group">
+					<input type="text" class="pure-input-1-2" placeholder="GTIN" name="GTIN">
+					<input type="text" class="pure-input-1-2" placeholder="name" name="name">
+				</fieldset>
 				expdate:<br>
 				<input type="date" name="expdate">
 				<br>
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
 			</form>
 		</div>
 
 		<div id="field_form">
-			<p>persist_item</p>
-			<form action="http://localhost:8080/remove">
+			<p>item from persistent table</p>
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/remove">
 				<input type="hidden" name="table" value="persist_item">
-				GTIN:<br>
-				<input type="text" name="GTIN">
-				<br>
-				name:<br>
-				<input type="text" name="name">
-				<br>
+				<fieldset class="pure-group">
+					<input type="text" class="pure-input-1-2" placeholder="GTIN" name="GTIN">
+					<input type="text" class="pure-input-1-2" placeholder="name" name="name">
+				</fieldset>
 				expdate:<br>
 				<input type="date" name="expdate">
 				<br>
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
 			</form>
 		</div>
 
 	</div>
 
-	<div id="outer_form">
+	<div id="middle_form">
 
 		<p>HOW LONG WAS THE DOOR OPEN FORM... TO...</p>
 
 		<div id="field_form">
-			<form action="http://localhost:8080/open_door_period">
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/open_door_period">
 				from:<br>
 				<input type="date" name="from">
 				<br>
 				to:<br>
 				<input type="date" name="to">
 				<br>
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
 			</form>
 		</div>
 
 		<p>EXPIRING BEFORE</p>
 
 		<div id="field_form">
-			<form action="http://localhost:8080/soon_to_expire">
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/soon_to_expire">
 				before:<br>
 				<input type="date" name="before">
 				<br>
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
 			</form>
 		</div>
 
 		<p>FOOD CONTAINING</p>
 
 		<div id="field_form">
-			<form action="http://localhost:8080/food_contain">
-				Allergen multiple select:<br>
+			<form class="pure-form pure-form-stacked" action="http://localhost:8080/food_contain">
+				Allergen<br>
 				<select name="allergen" multiple>
   				<option value="LACTOSE">LACTOSE</option>
   				<option value="WHEAT">WHEAT</option>
@@ -159,62 +239,53 @@
   				<option value="SOYBEAN">SOYBEAN</option>
 				</select>
 				<br>
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" class="pure-button pure-button-primary" >
 			</form>
 		</div>
 
 	</div>
 
-</div>
-
-<div id="outer_form">
-	
-	<p>LISTING</p>
-	<div>
-		<a href="http://localhost:8080/list?table=item" target="_blank" >list temp_item</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/list?table=profile" target="_blank" >list profile</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/list?table=allergen" target="_blank" >list allergen</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/list?table=allergenListItem" target="_blank" >list allergenListItem</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/list?table=allergenListProfile" target="_blank" >list allergenListProfile</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/list?table=persist_item" target="_blank" >list persist_item</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/list?table=persist_allergenListItem" target="_blank" >list persist_allergenListItem</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/list?table=itemdate" target="_blank" >list itemdate</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/list?table=doorLog" target="_blank" >list doorLog</a>
-	</div>	
-
-</div>
-
-<div id="outer_form">
-
-	<p>CLOSE THE DOOR</p>
-	<div>
-		<a href="http://localhost:8080/close_door" target="_blank" >demon run</a>
-	</div>
-	<p>SPECIAL REQ</p>
-	<div>
-		<a href="http://localhost:8080/show_allergies_food" target="_blank" >show_allergies_food</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/show_allergies_allergen" target="_blank" >show_allergies_allergen</a>
-	</div>
-	<div>
-		<a href="http://localhost:8080/show_allergies_allergenListItem" target="_blank" >show_allergies_allergenListItem</a>
 	</div>
 
-</div>
+	<div id="middle_form">
+
+		<p>SPECIAL REQ</p>
+
+
+		<div id="field_form">
+			<p>profile to item</p>
+				<form class="pure-form pure-form-stacked" action="http://localhost:8080/show_allergies_food">
+					<fieldset class="pure-group">
+						<input type="text" class="pure-input-1-2" placeholder="usr" name="usr">
+						<input type="password" class="pure-input-1-2" placeholder="passwd" name="passwd">
+					</fieldset>
+					<br>
+					<input type="submit" value="Submit" class="pure-button pure-button-primary" >
+				</form>
+		</div>
+		<div id="field_form">
+			<p>profile to allergen</p>
+				<form class="pure-form pure-form-stacked" action="http://localhost:8080/show_allergies_allergen">
+					<fieldset class="pure-group">
+						<input type="text" class="pure-input-1-2" placeholder="usr" name="usr">
+						<input type="password" class="pure-input-1-2" placeholder="passwd" name="passwd">
+					</fieldset>
+					<br>
+					<input type="submit" value="Submit" class="pure-button pure-button-primary" >
+				</form>	
+		</div>
+		<div id="field_form">
+				<p>allergen to item</p>
+				<form class="pure-form pure-form-stacked" action="http://localhost:8080/show_allergies_allergenListItem">
+					<fieldset class="pure-group">
+						<input type="text" class="pure-input-1-2" placeholder="usr" name="usr">
+						<input type="password" class="pure-input-1-2" placeholder="passwd" name="passwd">
+					</fieldset>
+					<br>
+					<input type="submit" value="Submit" class="pure-button pure-button-primary" >
+				</form>	
+		</div>
+	</div>
+
+
+

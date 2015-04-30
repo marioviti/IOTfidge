@@ -7,14 +7,6 @@ DROP TABLE IF EXISTS persist_item;
 DROP TABLE IF EXISTS persist_allergenListItem;
 DROP TABLE IF EXISTS itemdate;
 DROP TABLE IF EXISTS doorLog;
-DROP TABLE IF EXISTS users_data;
-
-CREATE TABLE users_data (
-	ID INTEGER PRIMARY KEY,
-	usr TEXT,
-	passwd TEXT,
-	salt TEXT
-	);
 
 CREATE TABLE persist_item (
 	ID INTEGER PRIMARY KEY,
