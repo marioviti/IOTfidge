@@ -136,7 +136,7 @@ class iotfridgeAPI:
             return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
         #query = "SELECT DISTINCT profile.profile_name, profile.profile_last_name, allergen.allergen_name"+" FROM profile JOIN allergenListProfile"+" ON profile.ID = allergenListProfile.profile_ID"+" JOIN allergen ON allergen.ID=allergenListProfile.allergen_ID"
-        query = "SELECT * FROM allergenToProfile"
+        query = "SELECT DISTINCT * FROM allergenToProfile"
         i = 0
         for row in self.cur.execute(query):
             i = 0
@@ -150,7 +150,7 @@ class iotfridgeAPI:
         if self.req_check_passwd(reqj) == False:
             return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
-        query = "SELECT * FROM itemToAllergen"
+        query = "SELECT DISTINCT * FROM itemToAllergen"
         i = 0
         for row in self.cur.execute(query):
             i = 0
@@ -164,7 +164,7 @@ class iotfridgeAPI:
         if self.req_check_passwd(reqj) == False:
             return { 'response': 'Not permitted', 'success': False }
         resp = { 'response': {'records' : []}, 'success': True }
-        query = "SELECT * FROM itemToProfile"
+        query = "SELECT DISTINCT * FROM itemToProfile"
         i = 0
         for row in self.cur.execute(query):
             i = 0

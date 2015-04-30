@@ -8,9 +8,9 @@ DROP TABLE IF EXISTS persist_allergenListItem;
 DROP TABLE IF EXISTS itemdate;
 DROP TABLE IF EXISTS doorLog;
 DROP TABLE IF EXISTS users_data;
-DROP VIEW IF EXISTS itemToAllergen;
-DROP VIEW IF EXISTS itemToProfile;
-DROP VIEW IF EXISTS allergenToProfile;
+DROP TABLE IF EXISTS itemToAllergen;
+DROP TABLE IF EXISTS itemToProfile;
+DROP TABLE IF EXISTS allergenToProfile;
 
 CREATE TABLE users_data (
 	ID INTEGER PRIMARY KEY,
@@ -86,12 +86,59 @@ CREATE TABLE doorLog (
 	closedate DATETIME DEFAULT NULL
 	);
 
-CREATE VIEW itemToAllergen AS
-	SELECT DISTINCT persist_item.item_name, allergen.allergen_name FROM persist_item JOIN persist_allergenListItem ON persist_item.ID = persist_allergenListItem.item_ID JOIN allergen ON allergen.ID=persist_allergenListItem.allergen_ID;
+CREATE TABLE itemToAllergen (
+	item TEXT,
+	allerg TEXT
+	);
 
-CREATE VIEW itemToProfile AS
-	SELECT DISTINCT persist_item.item_name, profile.profile_name, profile.profile_last_name FROM persist_item JOIN persist_allergenListItem ON persist_item.ID = persist_allergenListItem.item_ID JOIN allergenListProfile ON persist_allergenListItem.allergen_ID=allergenListProfile.allergen_ID JOIN profile ON profile.ID=allergenListProfile.profile_ID;
+CREATE TABLE itemToProfile (
+	item TEXT,
+	name TEXT,
+	last_name TEXT
+	);
 
-CREATE VIEW allergenToProfile AS
-    SELECT DISTINCT profile.profile_name, profile.profile_last_name, allergen.allergen_name FROM profile JOIN allergenListProfile ON profile.ID = allergenListProfile.profile_ID JOIN allergen ON allergen.ID=allergenListProfile.allergen_ID;
+CREATE TABLE allergenToProfile (
+	name TEXT,
+	last_name TEXT,
+	allerg TEXT
+	);
+
+CREATE TRIGGER persist_item_log AFTER INSERT ON persist_allergenListItem
+BEGIN
+   	INSERT INTO itemToAllergen (item,allerg)
+   	SELECT DISTINCT persist_item.item_name, allergen.allergen_name 
+   	FROM persist_item JOIN persist_allergenListItem ON persist_item.ID = persist_allergenListItem.item_ID 
+   	JOIN allergen ON allergen.ID = persist_allergenListItem.allergen_ID 
+   	WHERE persist_item.ID = (SELECT MAX(ID) FROM persist_item);
+END;
+
+CREATE TRIGGER persist_item_allergen_log AFTER INSERT ON persist_allergenListItem
+BEGIN
+   	INSERT INTO itemToProfile (item,name,last_name)
+   	SELECT DISTINCT persist_item.item_name, profile.profile_name, profile.profile_last_name 
+   	FROM persist_item JOIN persist_allergenListItem ON persist_item.ID = persist_allergenListItem.item_ID 
+   	JOIN allergenListProfile ON persist_allergenListItem.allergen_ID = allergenListProfile.allergen_ID 
+   	JOIN profile ON profile.ID = allergenListProfile.profile_ID
+   	WHERE persist_item.ID = (SELECT MAX(ID) FROM persist_item);
+END;
+
+CREATE TRIGGER profile_allergen_log AFTER INSERT ON allergenListProfile
+BEGIN
+   	INSERT INTO itemToProfile (item,name,last_name)
+   	SELECT DISTINCT persist_item.item_name, profile.profile_name, profile.profile_last_name 
+   	FROM persist_item JOIN persist_allergenListItem ON persist_item.ID = persist_allergenListItem.item_ID 
+   	JOIN allergenListProfile ON persist_allergenListItem.allergen_ID = allergenListProfile.allergen_ID 
+   	JOIN profile ON profile.ID = allergenListProfile.profile_ID
+   	WHERE profile.ID = (SELECT MAX(ID) FROM profile);
+END;
+
+CREATE TRIGGER profile_log AFTER INSERT ON allergenListProfile
+BEGIN
+	INSERT INTO allergenToProfile (name,last_name,allerg)
+	SELECT DISTINCT profile.profile_name, profile.profile_last_name, allergen.allergen_name 
+	FROM profile JOIN allergenListProfile ON profile.ID = allergenListProfile.profile_ID 
+	JOIN allergen ON allergen.ID = allergenListProfile.allergen_ID 
+	WHERE profile.ID = (SELECT MAX(ID) FROM profile);
+END;
+
 

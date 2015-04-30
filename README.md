@@ -1,17 +1,16 @@
 # IOTfidge
 courseWork 3 of databases University of Bristol
 
-OUTPAN
-
-https://pypi.python.org/pypi/outpan
-
-dependencies
+DEPENDECY : only modules that are not usually present in a python env
 
 iotfridgeAPI-> outpan 	-> 	parse_this 	-> 	nose
 						->	requests
 			-> labelAPI -> 	requests
 	
 iotfridge_route	-> 	bottle
+				->! cherrypy / wsgiserver (future implementation)
+
+Testing script
 	
 tester	-> 	pycurl
 
@@ -19,6 +18,8 @@ exel_reader -> openpyxl
 
 
 Outpan
+
+https://pypi.python.org/pypi/outpan
 
 	mario0utpan
 	mv14658@my.bristol.ac.uk
@@ -50,24 +51,6 @@ LABEL api
 	    "version": "1.01",
 	    "retailer_id": 1
 	}
-
-BIGOVEN API
-
-	marioven
-	mv14658@my.bristol.ac.uk
-	mario.b1g.O
-	Name
-	Mario
-	Company Name
-	database_cw3
-	Website
-	http://ec2-54-148-187-69.us-west-2.compute.amazonaws.com/
-
-	dvxi9G5zZ9MNo2q4888bO0Q1Xh71VZwh
-
-	100 req/Hr
-
-	http://api.bigoven.com/console
 
 
 
